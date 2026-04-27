@@ -15,21 +15,43 @@ def lam_sach(text):
     text = re.sub(r'[^\w\s]', ' ', text)
     return word_tokenize(text, format="text")
 
-def get_comments_and_predict(video_id):
+def get_comments_and_predict(video_id, max_total=1000):
     youtube = build('youtube', 'v3', developerKey=API_KEY)
-    request = youtube.commentThreads().list(part="snippet", videoId=video_id, maxResults=20, textFormat="plainText")
-    response = request.execute()
+    
+    all_comments = []
+    next_page_token = None
+    
+    while len(all_comments) < max_total:
+        request = youtube.commentThreads().list(
+            part="snippet", 
+            videoId=video_id, 
+            maxResults=100, 
+            pageToken=next_page_token,
+            textFormat="plainText"
+        )
+        response = request.execute()
+        
+        for item in response['items']:
+            comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
+            all_comments.append(comment)
+            if len(all_comments) >= max_total:
+                break
+        
+        next_page_token = response.get('nextPageToken')
+        if not next_page_token:
+            break
 
     results = []
-    for item in response['items']:
-        comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
-        
+    total_score = 0
+    
+    for comment in all_comments:
         sach = [lam_sach(comment)]
         so = vectorizer.transform(sach)
         
         # ------------------- ĐOẠN CẬP NHẬT -------------------
         xac_suat = model.predict_proba(so)[0]
         diem_so = round(xac_suat[1] * 10, 1)
+        total_score += diem_so
         
         label_text = "Tích cực" if diem_so >= 5.0 else "Tiêu cực"
         recommendation = True if diem_so >= 7.0 else False
@@ -43,8 +65,21 @@ def get_comments_and_predict(video_id):
         })
         # -----------------------------------------------------
     
+    # Tính điểm tổng thể video
+    avg_score = round(total_score / len(all_comments), 1) if all_comments else 0
+    star_rating = round(avg_score / 2, 1)
+    
+    output = {
+        "overall": {
+            "average_score": avg_score,
+            "star_rating": star_rating,
+            "total_comments": len(all_comments)
+        },
+        "comments": results
+    }
+    
     # In ra kết quả dạng JSON
-    print(json.dumps(results, ensure_ascii=False))
+    print(json.dumps(output, ensure_ascii=False))
 
 
 if __name__ == "__main__":
