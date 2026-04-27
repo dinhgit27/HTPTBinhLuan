@@ -3,217 +3,480 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from googleapiclient.discovery import build
 from transformers import pipeline
+import time
+import requests
 
-# --- CẤU HÌNH API & AI ---
+# ============================================
+# PAGE CONFIG
+# ============================================
+st.set_page_config(
+    page_title="YouTube Comment AI Analyzer",
+    page_icon="🔴",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# ============================================
+# CUSTOM CSS - YOUTUBE DARK THEME
+# ============================================
+st.markdown("""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    * { font-family: 'Inter', sans-serif !important; }
+    .stApp { background: linear-gradient(135deg, #0a0a0a 0%, #0f0f0f 50%, #1a0a0a 100%) !important; }
+    #MainMenu, footer, header, .stDeployButton { display: none !important; }
+    .glass-card {
+        background: rgba(31, 31, 31, 0.6) !important;
+        backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 24px !important;
+        padding: 2rem !important;
+        margin-bottom: 1.5rem !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+        transition: all 0.3s ease !important;
+    }
+    .hero-section {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, rgba(255,0,0,0.05) 0%, transparent 50%);
+        border-radius: 24px;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+    .hero-title { font-size: 3.5rem; font-weight: 900; color: #F1F1F1; line-height: 1.1; }
+    .hero-title span {
+        background: linear-gradient(135deg, #FF4444, #FF0000);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .stTextInput > div > div > input {
+        background: rgba(40, 40, 40, 0.8) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 16px !important;
+        color: #F1F1F1 !important;
+        padding: 1rem 1.25rem !important;
+    }
+    .stTextInput > div > div > input:focus {
+        border-color: #FF0000 !important;
+        box-shadow: 0 0 0 3px rgba(255,0,0,0.15) !important;
+    }
+    .stButton > button {
+        background: linear-gradient(135deg, #FF0000, #CC0000) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 16px !important;
+        padding: 0.875rem 2.5rem !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 20px rgba(255,0,0,0.3) !important;
+        width: 100% !important;
+    }
+    .star-glow {
+        color: #FFD700;
+        text-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700;
+        font-size: 2.5rem;
+        animation: pulse 2s ease-in-out infinite alternate;
+    }
+    .star-dim { color: #333; font-size: 2.5rem; }
+    @keyframes pulse { from { text-shadow: 0 0 20px #FFD700; } to { text-shadow: 0 0 30px #FFD700, 0 0 50px #FFA500; } }
+    .stat-box {
+        background: rgba(255,255,255,0.03);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: all 0.3s ease;
+    }
+    .badge-pos {
+        background: linear-gradient(135deg, rgba(76,175,80,0.2), rgba(76,175,80,0.05)) !important;
+        border: 1px solid rgba(76,175,80,0.3) !important;
+        color: #81C784 !important;
+        padding: 0.4rem 1rem !important;
+        border-radius: 999px !important;
+        font-weight: 600 !important;
+    }
+    .badge-neg {
+        background: linear-gradient(135deg, rgba(244,67,54,0.2), rgba(244,67,54,0.05)) !important;
+        border: 1px solid rgba(244,67,54,0.3) !important;
+        color: #E57373 !important;
+        padding: 0.4rem 1rem !important;
+        border-radius: 999px !important;
+        font-weight: 600 !important;
+    }
+    .badge-neu {
+        background: linear-gradient(135deg, rgba(158,158,158,0.2), rgba(158,158,158,0.05)) !important;
+        border: 1px solid rgba(158,158,158,0.3) !important;
+        color: #BDBDBD !important;
+        padding: 0.4rem 1rem !important;
+        border-radius: 999px !important;
+        font-weight: 600 !important;
+    }
+    .chart-container {
+        background: rgba(31,31,31,0.4);
+        border-radius: 24px;
+        padding: 2rem;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+    hr { border-color: rgba(255,255,255,0.05) !important; margin: 2rem 0 !important; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #FF0000; }
+</style>
+""", unsafe_allow_html=True)
+
+# ============================================
+# CONFIG
+# ============================================
 API_KEY = "AIzaSyDo1_HgQDTSqw1BIezKMu45Y3BYKk091Tw"
+TELEGRAM_BOT_TOKEN = "8606918938:AAFlcQ33rMCw8z-uB6wYm96M8NG3SUfqkvE"
+TELEGRAM_API = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
+CHAT_ID = "8585436965"
 
-# Tải mô hình PhoBERT từ Hugging Face và lưu vào bộ nhớ đệm (cache) để không phải tải lại mỗi lần bấm nút
-@st.cache_resource
+@st.cache_resource(show_spinner=False)
 def load_ai_model():
-    # Sử dụng pipeline phân tích cảm xúc tiếng Việt chuyên dụng
     return pipeline("sentiment-analysis", model="wonrax/phobert-base-vietnamese-sentiment")
 
+def escape_telegram_markdown(text):
+    """Escape ký tự đặc biệt cho Telegram MarkdownV2 hoặc loại bỏ Markdown lỗi"""
+    # Thay ** (markdown của Streamlit) thành * (markdown của Telegram)
+    text = text.replace("**", "*")
+    return text
+
+def send_telegram_message(chat_id, message):
+    """Gửi tin nhắn qua Telegram Bot và trả về (success, error_msg)"""
+    try:
+        url = f"{TELEGRAM_API}/sendMessage"
+        payload = {
+            "chat_id": chat_id,
+            "text": message
+            # Không dùng parse_mode để tránh lỗi markdown
+        }
+        response = requests.post(url, json=payload, timeout=10)
+        data = response.json()
+        if response.status_code == 200 and data.get("ok"):
+            return True, None
+        else:
+            error_msg = data.get("description", "Unknown error")
+            return False, error_msg
+    except Exception as e:
+        return False, str(e)
+
 def get_all_comments(youtube, video_id, max_total=1000):
-    """Lấy tất cả bình luận với phân trang"""
     all_comments = []
     next_page_token = None
-    
     while len(all_comments) < max_total:
         request = youtube.commentThreads().list(
-            part="snippet", 
-            videoId=video_id, 
-            maxResults=100, 
-            pageToken=next_page_token,
-            textFormat="plainText"
+            part="snippet", videoId=video_id, maxResults=100,
+            pageToken=next_page_token, textFormat="plainText"
         )
         response = request.execute()
-        
         for item in response['items']:
             comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
             all_comments.append(comment)
             if len(all_comments) >= max_total:
                 break
-        
         next_page_token = response.get('nextPageToken')
         if not next_page_token:
             break
-    
     return all_comments
 
-def render_stars(star_rating):
-    """Tạo HTML/CSS cho 5 ngôi sao với animation sáng đèn"""
-    full_stars = int(star_rating)
-    partial = star_rating - full_stars
-    
-    stars_html = ""
-    for i in range(5):
-        if i < full_stars:
-            # Sao sáng hoàn toàn với animation glow
-            stars_html += '<span class="star glowing">★</span>'
-        elif i == full_stars and partial >= 0.5:
-            # Sao nửa sáng
-            stars_html += '<span class="star half-glow">★</span>'
-        else:
-            # Sao tối
-            stars_html += '<span class="star dim">★</span>'
-    
-    return f"""
-    <style>
-        .star-container {{
-            font-size: 3rem;
-            text-align: center;
-            margin: 10px 0;
-        }}
-        .star {{
-            display: inline-block;
-            margin: 0 5px;
-            transition: all 0.3s ease;
-        }}
-        .glowing {{
-            color: #FFD700;
-            text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700;
-            animation: pulse 1.5s ease-in-out infinite alternate;
-        }}
-        .half-glow {{
-            color: #FFD700;
-            text-shadow: 0 0 5px #FFD700;
-            opacity: 0.7;
-        }}
-        .dim {{
-            color: #555;
-            opacity: 0.4;
-        }}
-        @keyframes pulse {{
-            from {{ text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700; }}
-            to {{ text-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFA500; }}
-        }}
-        .score-text {{
-            font-size: 1.5rem;
-            color: #FFD700;
-            text-align: center;
-            font-weight: bold;
-            margin-top: 10px;
-        }}
-        .overall-card {{
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }}
-    </style>
-    <div class="overall-card">
-        <div class="star-container">
-            {stars_html}
-        </div>
-        <div class="score-text">{star_rating}/5.0 sao</div>
-    </div>
-    """
+def render_stars_html(rating):
+    full = int(rating)
+    half = 1 if (rating - full) >= 0.5 else 0
+    empty = 5 - full - half
+    html = ""
+    for i in range(full):
+        html += '<span class="star-glow">★</span>'
+    if half:
+        html += '<span class="star-glow" style="opacity:0.6">★</span>'
+    for i in range(empty):
+        html += '<span class="star-dim">★</span>'
+    return f'<div style="text-align:center;margin:10px 0;">{html}</div>'
 
-# --- GIAO DIỆN ---
-st.set_page_config(page_title="AI YouTube Sentiment (PhoBERT)", layout="wide")
-st.title("🤖 Ứng dụng AI Phân Tích Bình Luận (Sử dụng Hugging Face)")
+# ============================================
+# UI - HERO
+# ============================================
+st.markdown("""
+<div class="hero-section">
+    <div style="font-size:4rem;margin-bottom:0.5rem;">🔴🤖</div>
+    <h1 class="hero-title">YouTube Comment<br><span>AI Analyzer</span></h1>
+    <p style="color:#AAAAAA;max-width:600px;margin:0 auto;">
+        Phân tích cảm xúc bình luận tiếng Việt bằng PhoBERT.<br>
+        Đánh giá chất lượng video qua góc nhìn người xem.
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
-url = st.text_input("Dán link YouTube tại đây:", "https://youtu.be/M8A_rRVp3Oo?si=Z_kfK0wihmB439Mk")
+# ============================================
+# INPUT
+# ============================================
+with st.container():
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    cols = st.columns([5, 2])
+    with cols[0]:
+        url = st.text_input("Link YouTube", value="https://www.youtube.com/watch?v=FoymeD0cwuo", 
+                           placeholder="Dán link YouTube...", label_visibility="collapsed")
+    with cols[1]:
+        analyze_clicked = st.button("🔍 Phân tích", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-if st.button("Bắt đầu phân tích"):
+# ============================================
+# ANALYZE
+# ============================================
+if analyze_clicked:
     try:
-        # Tải não bộ AI (Lần đầu chạy sẽ mất khoảng 1-2 phút để tải file ~500MB)
-        with st.spinner('Đang khởi động não bộ PhoBERT...'):
-            sentiment_analyzer = load_ai_model()
-
-        # Logic lấy Video ID
+        progress_placeholder = st.empty()
+        
+        with progress_placeholder.container():
+            st.markdown('<div class="glass-card" style="text-align:center;padding:3rem;">', unsafe_allow_html=True)
+            st.markdown("""
+                <div style="width:80px;height:80px;margin:0 auto 1rem;border:4px solid rgba(255,0,0,0.1);
+                     border-top-color:#FF0000;border-radius:50%;animation:spin 1s linear infinite;"></div>
+                <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+                <h3 style="color:#F1F1F1;">Đang khởi động AI 🧠</h3>
+                <p style="color:#888;">Tải mô hình PhoBERT (~500MB)...</p>
+            """, unsafe_allow_html=True)
+            bar = st.progress(0)
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        sentiment_analyzer = load_ai_model()
+        bar.progress(20)
+        
         if "v=" in url:
             video_id = url.split("v=")[1].split("&")[0]
         elif "youtu.be/" in url:
             video_id = url.split("youtu.be/")[1].split("?")[0]
         else:
             video_id = url.split("/")[-1].split("?")[0]
-
-        with st.spinner('Đang thu thập và phân tích ngữ nghĩa bình luận...'):
-            youtube = build('youtube', 'v3', developerKey=API_KEY)
+        
+        progress_placeholder.empty()
+        
+        with st.spinner(''):
+            st.markdown('<div class="glass-card" style="text-align:center;padding:2rem;">', unsafe_allow_html=True)
+            st.markdown('<p style="color:#F1F1F1;font-size:1.2rem;font-weight:600;">📥 Đang lấy bình luận từ YouTube...</p>', unsafe_allow_html=True)
+            progress_bar = st.progress(30)
+            st.markdown('</div>', unsafe_allow_html=True)
             
-            # Lấy tất cả bình luận (tối đa 1000)
+            youtube = build('youtube', 'v3', developerKey=API_KEY)
             all_comments = get_all_comments(youtube, video_id, max_total=1000)
-
+            
+            if not all_comments:
+                st.error("❌ Video không có bình luận hoặc không tìm thấy video.")
+                st.stop()
+            
+            progress_bar.progress(50)
+            
             data = []
             total_score = 0
+            sentiment_counts = {"Tích cực": 0, "Tiêu cực": 0, "Trung tính": 0}
             
-            for comment in all_comments:
+            for i, comment in enumerate(all_comments):
                 try:
-                    # Cắt bớt bình luận nếu quá dài (PhoBERT giới hạn ~256 token)
-                    # Tiếng Việt ~3-4 byte/token nên cắt 200 ký tự để an toàn
-                    short_comment = comment[:200]
+                    short = comment[:200]
+                    result = sentiment_analyzer(short, truncation=True)[0]
+                    label_ai = result['label']
+                    conf = result['score']
                     
-                    # Gọi AI dự đoán với truncation để tránh lỗi vượt giới hạn token
-                    ket_qua = sentiment_analyzer(short_comment, truncation=True)[0]
-                    nhan_ai = ket_qua['label']   # Trả về: POS, NEG, NEU
-                    do_tu_tin = ket_qua['score'] # Tỉ lệ % từ 0.0 đến 1.0
-
-                    # -----------------------------------------
-                    # LOGIC QUY ĐỔI ĐIỂM SỐ & ĐỀ XUẤT
-                    # -----------------------------------------
-                    if nhan_ai == 'POS':
+                    if label_ai == 'POS':
                         label = "Tích cực"
-                        diem_so = round(do_tu_tin * 10, 1)
-                    elif nhan_ai == 'NEG':
+                        score = round(conf * 10, 1)
+                    elif label_ai == 'NEG':
                         label = "Tiêu cực"
-                        diem_so = round((1 - do_tu_tin) * 10, 1) 
+                        score = round((1 - conf) * 10, 1)
                     else:
                         label = "Trung tính"
-                        diem_so = 5.0
-
-                    de_xuat = "Nên đề xuất" if diem_so >= 7.0 else "Không"
+                        score = 5.0
                 except Exception:
-                    # Nếu lỗi token hoặc bất kỳ lỗi nào, gán trung tính để không gián đoạn
                     label = "Trung tính"
-                    diem_so = 5.0
-                    de_xuat = "Không"
+                    score = 5.0
                 
-                total_score += diem_so
-                data.append([comment, label, diem_so, de_xuat])
+                total_score += score
+                sentiment_counts[label] += 1
+                data.append([comment, label, score])
+                
+                if i % 50 == 0:
+                    progress_bar.progress(min(50 + int((i / len(all_comments)) * 40), 90))
+            
+            progress_bar.progress(100)
+            time.sleep(0.3)
+        
+        df = pd.DataFrame(data, columns=["Bình luận", "Cảm xúc", "Điểm"])
+        avg_score = round(total_score / len(data), 1) if data else 0
+        star_rating = round(avg_score / 2, 1)
+        total = len(data)
+        progress_placeholder.empty()
+        
+        # SUCCESS
+        st.markdown(f"""
+        <div class="glass-card" style="text-align:center;background: linear-gradient(135deg, rgba(76,175,80,0.1), transparent);">
+            <div style="font-size:3rem;margin-bottom:0.5rem;">✅</div>
+            <h2 style="color:#81C784;">Phân tích hoàn tất!</h2>
+            <p style="color:#888;">Đã phân tích <strong style="color:#F1F1F1;">{total}</strong> bình luận bằng PhoBERT</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # SCORE CARD
+        st.markdown('<div class="glass-card" style="text-align:center;">', unsafe_allow_html=True)
+        st.markdown('<p style="color:#888;text-transform:uppercase;letter-spacing:2px;font-size:0.9rem;margin-bottom:1rem;">Điểm đánh giá tổng thể</p>', unsafe_allow_html=True)
+        score_cols = st.columns([1, 2, 1])
+        with score_cols[1]:
+            st.markdown(render_stars_html(star_rating), unsafe_allow_html=True)
+            st.markdown(f'<div style="font-size:5rem;font-weight:900;background:linear-gradient(135deg,#FFD700,#FFA500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">{avg_score}</div>', unsafe_allow_html=True)
+            st.markdown(f'<p style="color:#888;font-size:1.1rem;">/ 10 điểm • {star_rating} / 5 sao</p>', unsafe_allow_html=True)
+            
+            dominant = max(sentiment_counts, key=sentiment_counts.get)
+            if dominant == "Tích cực":
+                badge = '<span class="badge-pos" style="font-size:1.1rem;padding:0.6rem 2rem;">🟢 Rất tích cực</span>'
+            elif dominant == "Tiêu cực":
+                badge = '<span class="badge-neg" style="font-size:1.1rem;padding:0.6rem 2rem;">🔴 Tiêu cực</span>'
+            else:
+                badge = '<span class="badge-neu" style="font-size:1.1rem;padding:0.6rem 2rem;">🟡 Trung tính</span>'
+            st.markdown(f'<div style="margin-top:1rem;">{badge}</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # STATS ROW
+        cols = st.columns(4)
+        stats = [
+            ("🟢", "Tích cực", sentiment_counts["Tích cực"], "#81C784"),
+            ("🔴", "Tiêu cực", sentiment_counts["Tiêu cực"], "#E57373"),
+            ("⚪", "Trung tính", sentiment_counts["Trung tính"], "#BDBDBD"),
+            ("💬", "Tổng", total, "#F1F1F1"),
+        ]
+        for col, (icon, label, val, color) in zip(cols, stats):
+            with col:
+                st.markdown(f"""
+                <div class="stat-box">
+                    <div style="font-size:2rem;margin-bottom:0.5rem;">{icon}</div>
+                    <div style="font-size:2.5rem;font-weight:800;color:{color};">{val}</div>
+                    <div style="font-size:0.9rem;color:#888;text-transform:uppercase;letter-spacing:1px;">{label}</div>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # CHART + SUMMARY
+        st.markdown("<hr>", unsafe_allow_html=True)
+        cols = st.columns([1, 1])
+        
+        with cols[0]:
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            st.markdown('<h3 style="text-align:center;margin-bottom:1rem;color:#F1F1F1;">📊 Phân bố cảm xúc</h3>', unsafe_allow_html=True)
+            fig, ax = plt.subplots(figsize=(6, 6), facecolor='none')
+            ax.set_facecolor('none')
+            labels = list(sentiment_counts.keys())
+            sizes = list(sentiment_counts.values())
+            colors_pie = ['#4CAF50', '#f44336', '#9E9E9E']
+            wedges, texts, autotexts = ax.pie(
+                sizes, labels=labels, autopct='%1.1f%%', startangle=90,
+                colors=colors_pie, textprops={'color': '#F1F1F1', 'fontsize': 11},
+                wedgeprops={'edgecolor': '#1a1a1a', 'linewidth': 2}
+            )
+            for autotext in autotexts:
+                autotext.set_fontweight('bold')
+            ax.axis('equal')
+            plt.tight_layout()
+            st.pyplot(fig, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        with cols[1]:
+            st.markdown('<div class="glass-card" style="height:100%;">', unsafe_allow_html=True)
+            st.markdown('<h3 style="margin-bottom:1rem;color:#F1F1F1;">💡 Tóm tắt & Đề xuất</h3>', unsafe_allow_html=True)
+            
+            pos_pct = round((sentiment_counts["Tích cực"] / total) * 100, 1)
+            
+            if star_rating >= 4.0:
+                summary = f"🟢 Video được đánh giá **RẤT TÍCH CỰC** ({pos_pct}% tích cực). Nội dung chất lượng cao, phù hợp để đề xuất!"
+                rec = "✅ **Nên đề xuất** – Phản hồi tốt từ người xem"
+                rec_color = "#81C784"
+            elif star_rating >= 3.0:
+                summary = f"🟡 Video có đánh giá **KHÁ TÍCH CỰC** ({pos_pct}% tích cực). Có thể cân nhắc đề xuất."
+                rec = "⚠️ **Cân nhắc** – Có một số ý kiến trái chiều"
+                rec_color = "#FFD54F"
+            elif star_rating >= 2.0:
+                summary = f"🟠 Video có đánh giá **TRUNG BÌNH** ({pos_pct}% tích cực). Cần xem xét kỹ hơn."
+                rec = "❓ **Cần xem xét** – Nội dung gây tranh cãi"
+                rec_color = "#FF9800"
+            else:
+                summary = f"🔴 Video có đánh giá **TIÊU CỰC** ({pos_pct}% tích cực). Không nên đề xuất."
+                rec = "❌ **Không đề xuất** – Phản hồi xấu từ người xem"
+                rec_color = "#E57373"
+            
+            st.markdown(f'<p style="color:#ccc;line-height:1.6;margin-bottom:1.5rem;">{summary}</p>', unsafe_allow_html=True)
+            st.markdown(f"""
+            <div style="background:rgba(255,255,255,0.03);border-radius:16px;padding:1.5rem;border-left:4px solid {rec_color};">
+                <p style="color:{rec_color};font-weight:700;font-size:1.1rem;margin:0;">{rec}</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown('<div style="margin-top:1.5rem;">', unsafe_allow_html=True)
+            for label, count in sentiment_counts.items():
+                pct = round((count / total) * 100, 1)
+                color = "#4CAF50" if label == "Tích cực" else "#f44336" if label == "Tiêu cực" else "#9E9E9E"
+                st.markdown(f"""
+                <div style="margin-bottom:0.75rem;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;">
+                        <span style="color:#ccc;font-size:0.9rem;">{label}</span>
+                        <span style="color:#F1F1F1;font-weight:600;">{pct}%</span>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05);border-radius:999px;height:8px;overflow:hidden;">
+                        <div style="background:{color};height:100%;border-radius:999px;width:{pct}%;box-shadow:0 0 10px {color};"></div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        # COMMENTS TABLE
+        st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.markdown(f'<h3 style="margin-bottom:1rem;color:#F1F1F1;">📋 Chi tiết bình luận <span style="color:#888;font-size:0.9rem;">({min(total, 100)} hiển thị)</span></h3>', unsafe_allow_html=True)
+        display_df = df.head(100).copy()
+        display_df["Điểm"] = display_df["Điểm"].apply(lambda x: f"{x:.1f}")
+        st.dataframe(
+            display_df,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Bình luận": st.column_config.TextColumn("Bình luận", width="large"),
+                "Cảm xúc": st.column_config.TextColumn("Cảm xúc", width="small"),
+                "Điểm": st.column_config.TextColumn("Điểm", width="small"),
+            }
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # ============================================
+        # TỰ ĐỘNG GỬI TELEGRAM
+        # ============================================
+        with st.spinner("📨 Đang gửi kết quả về Telegram..."):
+            pos = sentiment_counts["Tích cực"]
+            neg = sentiment_counts["Tiêu cực"]
+            neu = sentiment_counts["Trung tính"]
+            
+            # Escape markdown để tránh lỗi parse Telegram
+            safe_summary = escape_telegram_markdown(summary)
+            safe_rec = escape_telegram_markdown(rec)
+            
+            telegram_msg = f"""🔴 *YouTube Comment AI Analyzer*
 
-            df_result = pd.DataFrame(data, columns=["Bình luận", "Kết quả AI", "Điểm (10.0)", "Đề xuất"])
-            
-            # Tính điểm tổng thể video
-            avg_score = round(total_score / len(data), 1) if data else 0
-            star_rating = round(avg_score / 2, 1)
-            
-            # --- HIỂN THỊ KẾT QUẢ ---
-            st.success(f"Đã phân tích cực sâu {len(data)} bình luận bằng PhoBERT!")
-            
-            # Hiển thị điểm tổng thể và ngôi sao
-            st.write("### ⭐ Đánh giá tổng thể video")
-            st.markdown(render_stars(star_rating), unsafe_allow_html=True)
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric("Điểm trung bình (thang 10)", f"{avg_score}/10")
-            with col2:
-                st.metric("Tổng số bình luận phân tích", len(data))
-            
-            st.divider()
-            
-            c1, c2 = st.columns([1.5, 1]) 
-            
-            with c1:
-                st.write("### 📊 Thống kê chi tiết")
-                st.dataframe(df_result, use_container_width=True)
-            
-            with c2:
-                st.write("### 📈 Biểu đồ cảm xúc")
-                labels = df_result["Kết quả AI"].value_counts().index
-                sizes = df_result["Kết quả AI"].value_counts().values
-                
-                # Setup màu sắc tương ứng: Tích cực (Xanh), Tiêu cực (Đỏ), Trung tính (Xám)
-                color_map = {"Tích cực": "#66b3ff", "Tiêu cực": "#ff9999", "Trung tính": "#d9d9d9"}
-                colors = [color_map[l] for l in labels]
-                
-                fig, ax = plt.subplots()
-                ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors)
-                ax.axis('equal') 
-                st.pyplot(fig)
+📺 *Link:* {url}
+⭐ *Điểm:* {avg_score}/10 ({star_rating}/5 sao)
 
+📊 *Thống kê:*
+• 🟢 Tích cực: {pos} ({round(pos/total*100,1)}%)
+• 🔴 Tiêu cực: {neg} ({round(neg/total*100,1)}%)
+• ⚪ Trung tính: {neu} ({round(neu/total*100,1)}%)
+• 💬 Tổng: {total} bình luận
+
+💡 *Tóm tắt:*
+{safe_summary}
+
+📌 *Đề xuất:* {safe_rec}
+"""
+            success, error = send_telegram_message(CHAT_ID, telegram_msg)
+            if success:
+                st.success("✅ Đã tự động gửi kết quả về Telegram!")
+            else:
+                st.error(f"❌ Gửi Telegram thất bại: {error}")
+        
     except Exception as e:
-        st.error(f"Lỗi hệ thống: {e}")
+        st.error(f"❌ Lỗi: {e}")
 

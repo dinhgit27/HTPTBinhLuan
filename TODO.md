@@ -6,5 +6,7 @@
 - [x] Bước 2: Cập nhật `predict_service.py` - Thêm phân trang và tính điểm tổng thể video
 - [x] Bước 3: Cập nhật `app.py` - Phân trang, tính điểm trung bình, hiển thị 5 sao animation
 - [x] Bước 4: Kiểm tra và chạy thử
+- [x] Bước 5: Tạo `api_server.py` - Flask API Server để n8n gọi đến
+- [ ] Bước 6: Cấu hình n8n Webhook gọi đến API và gửi kết quả về Telegram
 
 
