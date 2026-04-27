@@ -1,30 +1,31 @@
 import streamlit as st
 import pandas as pd
-import joblib
-import re
-import matplotlib.pyplot as plt # Thêm thư viện vẽ biểu đồ
+import matplotlib.pyplot as plt
 from googleapiclient.discovery import build
-from underthesea import word_tokenize
+from transformers import pipeline
 
-# --- CẤU HÌNH (Giữ nguyên phần load model và API_KEY của bạn) ---
+# --- CẤU HÌNH API & AI ---
 API_KEY = "AIzaSyDo1_HgQDTSqw1BIezKMu45Y3BYKk091Tw"
-model = joblib.load('mo_hinh_ai.pkl')
-vectorizer = joblib.load('bo_tu_dien.pkl')
 
-def lam_sach(text):
-    text = str(text).lower()
-    text = re.sub(r'[^\w\s]', ' ', text)
-    return word_tokenize(text, format="text")
+# Tải mô hình PhoBERT từ Hugging Face và lưu vào bộ nhớ đệm (cache) để không phải tải lại mỗi lần bấm nút
+@st.cache_resource
+def load_ai_model():
+    # Sử dụng pipeline phân tích cảm xúc tiếng Việt chuyên dụng
+    return pipeline("sentiment-analysis", model="wonrax/phobert-base-vietnamese-sentiment")
 
 # --- GIAO DIỆN ---
-st.set_page_config(page_title="AI YouTube Sentiment", layout="wide")
-st.title("🤖 Ứng dụng AI Phân Tích Bình Luận YouTube")
+st.set_page_config(page_title="AI YouTube Sentiment (PhoBERT)", layout="wide")
+st.title("🤖 Ứng dụng AI Phân Tích Bình Luận (Sử dụng Hugging Face)")
 
 url = st.text_input("Dán link YouTube tại đây:", "https://youtu.be/M8A_rRVp3Oo?si=Z_kfK0wihmB439Mk")
 
 if st.button("Bắt đầu phân tích"):
     try:
-        # 1. Logic lấy Video ID chuẩn cho mọi loại link
+        # Tải não bộ AI (Lần đầu chạy sẽ mất khoảng 1-2 phút để tải file ~500MB)
+        with st.spinner('Đang khởi động não bộ PhoBERT...'):
+            sentiment_analyzer = load_ai_model()
+
+        # Logic lấy Video ID
         if "v=" in url:
             video_id = url.split("v=")[1].split("&")[0]
         elif "youtu.be/" in url:
@@ -32,7 +33,7 @@ if st.button("Bắt đầu phân tích"):
         else:
             video_id = url.split("/")[-1].split("?")[0]
 
-        with st.spinner('Đang lấy dữ liệu...'):
+        with st.spinner('Đang thu thập và phân tích ngữ nghĩa bình luận...'):
             youtube = build('youtube', 'v3', developerKey=API_KEY)
             request = youtube.commentThreads().list(part="snippet", videoId=video_id, maxResults=50, textFormat="plainText")
             response = request.execute()
@@ -40,33 +41,39 @@ if st.button("Bắt đầu phân tích"):
             data = []
             for item in response['items']:
                 comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
-                sach = [lam_sach(comment)]
-                so = vectorizer.transform(sach)
                 
-                # ------------------- ĐOẠN CẬP NHẬT -------------------
-                # Sử dụng predict_proba để lấy mảng xác suất [Tiêu cực, Tích cực]
-                xac_suat = model.predict_proba(so)[0] 
-                ti_le_tich_cuc = xac_suat[1] # Lấy xác suất của nhãn 1
+                # Cắt bớt bình luận nếu quá dài (Mô hình Transformer giới hạn 256 token)
+                short_comment = comment[:500] 
                 
-                # Quy đổi thang 10.0
-                diem_so = round(ti_le_tich_cuc * 10, 1)
-                
-                # Logic Phân loại & Đề xuất
-                label = "Tích cực" if diem_so >= 5.0 else "Tiêu cực"
+                # Gọi AI dự đoán
+                ket_qua = sentiment_analyzer(short_comment)[0]
+                nhan_ai = ket_qua['label']   # Trả về: POS (Tích cực), NEG (Tiêu cực), NEU (Trung tính)
+                do_tu_tin = ket_qua['score'] # Trả về tỉ lệ % từ 0.0 đến 1.0
+
+                # -----------------------------------------
+                # LOGIC QUY ĐỔI ĐIỂM SỐ & ĐỀ XUẤT
+                # -----------------------------------------
+                if nhan_ai == 'POS':
+                    label = "Tích cực"
+                    diem_so = round(do_tu_tin * 10, 1)
+                elif nhan_ai == 'NEG':
+                    label = "Tiêu cực"
+                    # Nếu chắc chắn là tiêu cực (vd: 0.9) thì điểm sẽ rất thấp: (1 - 0.9)*10 = 1.0 điểm
+                    diem_so = round((1 - do_tu_tin) * 10, 1) 
+                else:
+                    label = "Trung tính"
+                    diem_so = 5.0 # Mặc định điểm trung bình
+
                 de_xuat = "Nên đề xuất" if diem_so >= 7.0 else "Không"
                 
-                # Thêm vào danh sách
                 data.append([comment, label, diem_so, de_xuat])
-                # -----------------------------------------------------
 
-            # Cập nhật thêm cột cho DataFrame
             df_result = pd.DataFrame(data, columns=["Bình luận", "Kết quả AI", "Điểm (10.0)", "Đề xuất"])
             
             # --- HIỂN THỊ KẾT QUẢ ---
-            st.success(f"Đã phân tích xong {len(data)} bình luận!")
+            st.success(f"Đã phân tích cực sâu {len(data)} bình luận bằng PhoBERT!")
             
-            
-            c1, c2 = st.columns([1, 1]) # Chia làm 2 cột
+            c1, c2 = st.columns([1.5, 1]) 
             
             with c1:
                 st.write("### 📊 Thống kê chi tiết")
@@ -74,15 +81,17 @@ if st.button("Bắt đầu phân tích"):
             
             with c2:
                 st.write("### 📈 Biểu đồ cảm xúc")
-                # Vẽ biểu đồ tròn bằng Matplotlib
                 labels = df_result["Kết quả AI"].value_counts().index
                 sizes = df_result["Kết quả AI"].value_counts().values
-                colors = ['#66b3ff', '#ff9999'] # Màu xanh cho tích cực, đỏ cho tiêu cực
+                
+                # Setup màu sắc tương ứng: Tích cực (Xanh), Tiêu cực (Đỏ), Trung tính (Xám)
+                color_map = {"Tích cực": "#66b3ff", "Tiêu cực": "#ff9999", "Trung tính": "#d9d9d9"}
+                colors = [color_map[l] for l in labels]
                 
                 fig, ax = plt.subplots()
                 ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors)
                 ax.axis('equal') 
-                st.pyplot(fig) # Hiển thị biểu đồ lên web
+                st.pyplot(fig)
 
     except Exception as e:
-        st.error(f"Lỗi: {e}")
+        st.error(f"Lỗi hệ thống: {e}")
