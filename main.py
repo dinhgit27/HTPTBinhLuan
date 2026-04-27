@@ -40,13 +40,15 @@ print(f"✅ Độ chính xác của AI trên tập kiểm tra: {diem_so * 100:.2
 cau_test = ["nhạc này nghe buồn ngủ chán quá"]
 cau_test_sach = [lam_sach_van_ban(cau_test[0])]
 cau_test_so = vectorizer.transform(cau_test_sach)
-du_doan = model.predict(cau_test_so)
+
+# ------------------- ĐOẠN CẬP NHẬT -------------------
+xac_suat_test = model.predict_proba(cau_test_so)[0]
+diem_test = round(xac_suat_test[1] * 10, 1)
+nhan_test = 1 if diem_test >= 5.0 else 0
 
 print("--- TEST AI ---")
 print(f"Câu khách hàng viết: '{cau_test[0]}'")
-print("AI dự đoán:", "Tích cực (1) 😍" if du_doan[0] == 1 else "Tiêu cực (0) 😡")
-
-# 4. LƯU LẠI MÔ HÌNH (ĐÓNG GÓI AI) - ĐOẠN NÀY NẰM CHỐT SỔ Ở CUỐI!
-joblib.dump(model, 'mo_hinh_ai.pkl')
-joblib.dump(vectorizer, 'bo_tu_dien.pkl')
-print("\n[THÀNH CÔNG] Đã lưu não bộ AI vào file .pkl để chuẩn bị ghép nối với Giao diện!")
+print(f"Điểm số AI đánh giá: {diem_test}/10.0")
+print("Đề xuất:", "Nên đề xuất ✅" if diem_test >= 7.0 else "Không đề xuất ❌")
+print("AI phân loại:", "Tích cực 😍" if nhan_test == 1 else "Tiêu cực 😡")
+# -----------------------------------------------------

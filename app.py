@@ -42,14 +42,29 @@ if st.button("Bắt đầu phân tích"):
                 comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
                 sach = [lam_sach(comment)]
                 so = vectorizer.transform(sach)
-                du_doan = model.predict(so)[0]
-                label = "Tích cực" if du_doan == 1 else "Tiêu cực"
-                data.append([comment, label])
+                
+                # ------------------- ĐOẠN CẬP NHẬT -------------------
+                # Sử dụng predict_proba để lấy mảng xác suất [Tiêu cực, Tích cực]
+                xac_suat = model.predict_proba(so)[0] 
+                ti_le_tich_cuc = xac_suat[1] # Lấy xác suất của nhãn 1
+                
+                # Quy đổi thang 10.0
+                diem_so = round(ti_le_tich_cuc * 10, 1)
+                
+                # Logic Phân loại & Đề xuất
+                label = "Tích cực" if diem_so >= 5.0 else "Tiêu cực"
+                de_xuat = "Nên đề xuất" if diem_so >= 7.0 else "Không"
+                
+                # Thêm vào danh sách
+                data.append([comment, label, diem_so, de_xuat])
+                # -----------------------------------------------------
 
-            df_result = pd.DataFrame(data, columns=["Bình luận", "Kết quả AI"])
+            # Cập nhật thêm cột cho DataFrame
+            df_result = pd.DataFrame(data, columns=["Bình luận", "Kết quả AI", "Điểm (10.0)", "Đề xuất"])
             
             # --- HIỂN THỊ KẾT QUẢ ---
             st.success(f"Đã phân tích xong {len(data)} bình luận!")
+            
             
             c1, c2 = st.columns([1, 1]) # Chia làm 2 cột
             

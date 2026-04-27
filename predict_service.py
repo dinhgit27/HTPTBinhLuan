@@ -23,15 +23,29 @@ def get_comments_and_predict(video_id):
     results = []
     for item in response['items']:
         comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
-        # Dự đoán cảm xúc
+        
         sach = [lam_sach(comment)]
         so = vectorizer.transform(sach)
-        du_doan = int(model.predict(so)[0]) # 0 hoặc 1
         
-        results.append({"comment": comment, "sentiment": du_doan})
+        # ------------------- ĐOẠN CẬP NHẬT -------------------
+        xac_suat = model.predict_proba(so)[0]
+        diem_so = round(xac_suat[1] * 10, 1)
+        
+        label_text = "Tích cực" if diem_so >= 5.0 else "Tiêu cực"
+        recommendation = True if diem_so >= 7.0 else False
+        
+        # Đóng gói JSON với đầy đủ tham số
+        results.append({
+            "comment": comment, 
+            "sentiment": label_text,
+            "score": diem_so,
+            "is_recommended": recommendation
+        })
+        # -----------------------------------------------------
     
-    # In ra kết quả dạng JSON để C# đọc
+    # In ra kết quả dạng JSON
     print(json.dumps(results, ensure_ascii=False))
+
 
 if __name__ == "__main__":
     # Nhận Video ID từ tham số dòng lệnh (C# gửi sang)

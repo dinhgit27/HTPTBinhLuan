@@ -1,0 +1,7 @@
+streamlit
+pandas
+scikit-learn
+underthesea
+google-api-python-client
+matplotlib
+joblib
