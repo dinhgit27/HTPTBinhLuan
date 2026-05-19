@@ -5,3 +5,5 @@ matplotlib
 transformers
 torch
 requests
+wordcloud
+underthesea

@@ -134,14 +134,32 @@ TELEGRAM_API = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
 CHAT_ID = "8585436965"
 
 @st.cache_resource(show_spinner=False)
-def load_ai_model():
-    return pipeline("sentiment-analysis", model="wonrax/phobert-base-vietnamese-sentiment")
+def load_ai_model(model_name):
+    return pipeline("sentiment-analysis", model=model_name)
 
 def escape_telegram_markdown(text):
     """Escape ký tự đặc biệt cho Telegram MarkdownV2 hoặc loại bỏ Markdown lỗi"""
     # Thay ** (markdown của Streamlit) thành * (markdown của Telegram)
     text = text.replace("**", "*")
     return text
+
+def send_telegram_image(chat_id, image, caption=None):
+    """Gửi ảnh (biểu đồ) qua Telegram Bot"""
+    try:
+        url = f"{TELEGRAM_API}/sendPhoto"
+        files = {"photo": image}
+        data = {"chat_id": chat_id}
+        if caption:
+            data["caption"] = caption
+        response = requests.post(url, data=data, files=files, timeout=20)
+        data = response.json()
+        if response.status_code == 200 and data.get("ok"):
+            return True, None
+        else:
+            error_msg = data.get("description", "Unknown error")
+            return False, error_msg
+    except Exception as e:
+        return False, str(e)
 
 def send_telegram_message(chat_id, message):
     """Gửi tin nhắn qua Telegram Bot và trả về (success, error_msg)"""
@@ -213,11 +231,18 @@ st.markdown("""
 # ============================================
 with st.container():
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    cols = st.columns([5, 2])
+    cols = st.columns([4, 2, 2])
     with cols[0]:
         url = st.text_input("Link YouTube", value="https://www.youtube.com/watch?v=FoymeD0cwuo", 
                            placeholder="Dán link YouTube...", label_visibility="collapsed")
     with cols[1]:
+        lang_option = st.selectbox(
+            "Ngôn ngữ phân tích",
+            options=["Tiếng Việt 🇻🇳", "English / Multi-language 🌐"],
+            index=0,
+            label_visibility="collapsed"
+        )
+    with cols[2]:
         analyze_clicked = st.button("🔍 Phân tích", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -228,19 +253,29 @@ if analyze_clicked:
     try:
         progress_placeholder = st.empty()
         
+        # Chọn mô hình AI tương ứng dựa theo ngôn ngữ phân tích
+        if lang_option == "Tiếng Việt 🇻🇳":
+            model_name = "wonrax/phobert-base-vietnamese-sentiment"
+            model_desc = "PhoBERT (~500MB)"
+            lang_code = "vi"
+        else:
+            model_name = "lxyuan/distilbert-base-multilingual-cased-sentiments-student"
+            model_desc = "DistilBERT Multilingual (~270MB)"
+            lang_code = "en"
+            
         with progress_placeholder.container():
             st.markdown('<div class="glass-card" style="text-align:center;padding:3rem;">', unsafe_allow_html=True)
-            st.markdown("""
+            st.markdown(f"""
                 <div style="width:80px;height:80px;margin:0 auto 1rem;border:4px solid rgba(255,0,0,0.1);
                      border-top-color:#FF0000;border-radius:50%;animation:spin 1s linear infinite;"></div>
-                <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+                <style>@keyframes spin{{to{{transform:rotate(360deg)}}}}</style>
                 <h3 style="color:#F1F1F1;">Đang khởi động AI 🧠</h3>
-                <p style="color:#888;">Tải mô hình PhoBERT (~500MB)...</p>
+                <p style="color:#888;">Tải mô hình {model_desc}...</p>
             """, unsafe_allow_html=True)
             bar = st.progress(0)
             st.markdown('</div>', unsafe_allow_html=True)
         
-        sentiment_analyzer = load_ai_model()
+        sentiment_analyzer = load_ai_model(model_name)
         bar.progress(20)
         
         if "v=" in url:
@@ -258,8 +293,33 @@ if analyze_clicked:
             progress_bar = st.progress(30)
             st.markdown('</div>', unsafe_allow_html=True)
             
-            youtube = build('youtube', 'v3', developerKey=API_KEY)
-            all_comments = get_all_comments(youtube, video_id, max_total=1000)
+            try:
+                youtube = build('youtube', 'v3', developerKey=API_KEY)
+                all_comments = get_all_comments(youtube, video_id, max_total=1000)
+            except Exception as e:
+                # Chế độ dự phòng offline (Offline Backup Mode) phòng trường hợp mất mạng / hết hạn quota API
+                import os
+                if os.path.exists("binh_luan_youtube.csv"):
+                    try:
+                        offline_df = pd.read_csv("binh_luan_youtube.csv")
+                        col_candidates = ["BinhLuan", "Bình luận", offline_df.columns[0]]
+                        comment_col = None
+                        for c in col_candidates:
+                            if c in offline_df.columns:
+                                comment_col = c
+                                break
+                        if comment_col:
+                            all_comments = offline_df[comment_col].dropna().tolist()[:1000]
+                            st.warning("⚠️ Không thể kết nối tới API YouTube (Hết quota hoặc mất mạng). Hệ thống đã tự động kích hoạt Chế độ Ngoại tuyến (Offline Backup) và đang phân tích dữ liệu mẫu.")
+                        else:
+                            st.error("❌ Không thể kết nối API YouTube và không tìm thấy cột dữ liệu hợp lệ trong file offline.")
+                            st.stop()
+                    except Exception as offline_err:
+                        st.error(f"❌ Không thể kết nối API YouTube và gặp lỗi khi đọc dữ liệu dự phòng offline: {offline_err}")
+                        st.stop()
+                else:
+                    st.error("❌ Không thể kết nối API YouTube (Hết quota hoặc mất mạng) và không tìm thấy file dữ liệu offline dự phòng (binh_luan_youtube.csv).")
+                    st.stop()
             
             if not all_comments:
                 st.error("❌ Video không có bình luận hoặc không tìm thấy video.")
@@ -275,13 +335,13 @@ if analyze_clicked:
                 try:
                     short = comment[:200]
                     result = sentiment_analyzer(short, truncation=True)[0]
-                    label_ai = result['label']
+                    label_ai = result['label'].upper()
                     conf = result['score']
                     
-                    if label_ai == 'POS':
+                    if label_ai in ['POS', 'POSITIVE']:
                         label = "Tích cực"
                         score = round(conf * 10, 1)
-                    elif label_ai == 'NEG':
+                    elif label_ai in ['NEG', 'NEGATIVE']:
                         label = "Tiêu cực"
                         score = round((1 - conf) * 10, 1)
                     else:
@@ -360,18 +420,28 @@ if analyze_clicked:
         with cols[0]:
             st.markdown('<div class="chart-container">', unsafe_allow_html=True)
             st.markdown('<h3 style="text-align:center;margin-bottom:1rem;color:#F1F1F1;">📊 Phân bố cảm xúc</h3>', unsafe_allow_html=True)
-            fig, ax = plt.subplots(figsize=(6, 6), facecolor='none')
-            ax.set_facecolor('none')
+            fig, ax = plt.subplots(figsize=(6, 6), facecolor='#121212')
+            ax.set_facecolor('#121212')
             labels = list(sentiment_counts.keys())
             sizes = list(sentiment_counts.values())
-            colors_pie = ['#4CAF50', '#f44336', '#9E9E9E']
+            colors_pie = ['#10b981', '#ef4444', '#6b7280']
             wedges, texts, autotexts = ax.pie(
                 sizes, labels=labels, autopct='%1.1f%%', startangle=90,
-                colors=colors_pie, textprops={'color': '#F1F1F1', 'fontsize': 11},
-                wedgeprops={'edgecolor': '#1a1a1a', 'linewidth': 2}
+                colors=colors_pie, textprops={'color': '#F1F1F1', 'fontsize': 11, 'fontweight': '500'},
+                wedgeprops={'width': 0.35, 'edgecolor': '#121212', 'linewidth': 3},
+                pctdistance=0.82
             )
             for autotext in autotexts:
+                autotext.set_color('#F1F1F1')
                 autotext.set_fontweight('bold')
+            
+            # Thêm tổng số bình luận ở tâm biểu đồ tròn (Donut chart)
+            ax.text(
+                0, 0, f"{total}\nBình luận", 
+                ha='center', va='center', 
+                color='#F1F1F1', fontsize=14, fontweight='bold'
+            )
+            
             ax.axis('equal')
             plt.tight_layout()
             st.pyplot(fig, use_container_width=True)
@@ -442,38 +512,123 @@ if analyze_clicked:
             }
         )
         st.markdown('</div>', unsafe_allow_html=True)
+
+        from wordcloud_utils import extract_keywords, plot_keyword_bar_chart
+        st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.markdown('<h3 style="margin-bottom:1.5rem;color:#F1F1F1;">📊 Thống kê từ khóa nổi bật</h3>', unsafe_allow_html=True)
+        lang_code = "vi" if lang_option == "Tiếng Việt 🇻🇳" else "en"
+        keywords = extract_keywords(df["Bình luận"].tolist(), top_k=50, language=lang_code)
         
+        # Thiết kế dạng 2 cột: Bên trái là Bảng liệt kê chi tiết, Bên phải là Biểu đồ trực quan hóa
+        key_cols = st.columns([4, 5])
+        
+        with key_cols[0]:
+            st.markdown('<p style="color:#888;font-size:0.95rem;margin-bottom:0.75rem;">📋 Danh sách từ khóa (Top 50)</p>', unsafe_allow_html=True)
+            kw_df = pd.DataFrame(keywords, columns=["Từ khóa", "Số lần xuất hiện"])
+            kw_df["Tần suất"] = kw_df["Số lần xuất hiện"].apply(lambda x: f"{x} lần")
+            
+            st.dataframe(
+                kw_df[["Từ khóa", "Tần suất"]],
+                use_container_width=True,
+                hide_index=True,
+                height=380,
+                column_config={
+                    "Từ khóa": st.column_config.TextColumn("Từ khóa", width="large"),
+                    "Tần suất": st.column_config.TextColumn("Tần suất", width="small")
+                }
+            )
+            
+        with key_cols[1]:
+            st.markdown('<p style="color:#888;font-size:0.95rem;margin-bottom:0.75rem;">📈 Biểu đồ cột ngang (Top 15)</p>', unsafe_allow_html=True)
+            bar_plt = plot_keyword_bar_chart(keywords, title=None, top_n=15)
+            st.pyplot(bar_plt, use_container_width=True)
+            bar_plt.close()
+            
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # ============================================
+        # BIỂU ĐỒ ĐƯỜNG CẢM XÚC THEO THỜI GIAN
+        # ============================================
+        from line_chart_utils import plot_sentiment_line_chart
+        st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.markdown('<h3 style="margin-bottom:1rem;color:#F1F1F1;">📈 Biểu đồ cảm xúc theo thời gian</h3>', unsafe_allow_html=True)
+        line_plt = plot_sentiment_line_chart(df)
+        st.pyplot(line_plt, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
         # ============================================
         # TỰ ĐỘNG GỬI TELEGRAM
         # ============================================
         with st.spinner("📨 Đang gửi kết quả về Telegram..."):
+            import io
             pos = sentiment_counts["Tích cực"]
             neg = sentiment_counts["Tiêu cực"]
             neu = sentiment_counts["Trung tính"]
-            
             # Escape markdown để tránh lỗi parse Telegram
             safe_summary = escape_telegram_markdown(summary)
             safe_rec = escape_telegram_markdown(rec)
-            
             telegram_msg = f"""🔴 *YouTube Comment AI Analyzer*
-
-📺 *Link:* {url}
+\n📺 *Link:* {url}
 ⭐ *Điểm:* {avg_score}/10 ({star_rating}/5 sao)
-
-📊 *Thống kê:*
+\n📊 *Thống kê:*
 • 🟢 Tích cực: {pos} ({round(pos/total*100,1)}%)
 • 🔴 Tiêu cực: {neg} ({round(neg/total*100,1)}%)
 • ⚪ Trung tính: {neu} ({round(neu/total*100,1)}%)
 • 💬 Tổng: {total} bình luận
-
-💡 *Tóm tắt:*
+\n💡 *Tóm tắt:*
 {safe_summary}
-
-📌 *Đề xuất:* {safe_rec}
+\n📌 *Đề xuất:* {safe_rec}
 """
+            # Gửi text
             success, error = send_telegram_message(CHAT_ID, telegram_msg)
+            # Gửi ảnh biểu đồ tròn
+            pie_buf = io.BytesIO()
+            fig, ax = plt.subplots(figsize=(6, 6), facecolor='#121212')
+            ax.set_facecolor('#121212')
+            labels = list(sentiment_counts.keys())
+            sizes = list(sentiment_counts.values())
+            colors_pie = ['#10b981', '#ef4444', '#6b7280']
+            wedges, texts, autotexts = ax.pie(
+                sizes, labels=labels, autopct='%1.1f%%', startangle=90,
+                colors=colors_pie, textprops={'color': '#F1F1F1', 'fontsize': 11, 'fontweight': '500'},
+                wedgeprops={'width': 0.35, 'edgecolor': '#121212', 'linewidth': 3},
+                pctdistance=0.82
+            )
+            for autotext in autotexts:
+                autotext.set_color('#F1F1F1')
+                autotext.set_fontweight('bold')
+            
+            # Thêm tổng số bình luận ở tâm biểu đồ tròn (Donut chart)
+            ax.text(
+                0, 0, f"{total}\nBình luận", 
+                ha='center', va='center', 
+                color='#F1F1F1', fontsize=14, fontweight='bold'
+            )
+            
+            ax.axis('equal')
+            plt.tight_layout()
+            fig.savefig(pie_buf, format='png', bbox_inches='tight', facecolor='#121212', transparent=False)
+            pie_buf.seek(0)
+            send_telegram_image(CHAT_ID, pie_buf, caption="Biểu đồ tròn cảm xúc")
+            plt.close(fig)
+            # Gửi Biểu đồ từ khóa nổi bật (Dạng danh sách trực quan)
+            wc_buf = io.BytesIO()
+            bar_plt = plot_keyword_bar_chart(keywords, title="Biểu đồ từ khóa xuất hiện nhiều nhất", top_n=15)
+            bar_plt.savefig(wc_buf, format='png', bbox_inches='tight', facecolor='#121212', transparent=False)
+            wc_buf.seek(0)
+            send_telegram_image(CHAT_ID, wc_buf, caption="Biểu đồ từ khóa xuất hiện nhiều nhất")
+            bar_plt.close()
+            # Gửi Line chart
+            line_buf = io.BytesIO()
+            line_plt = plot_sentiment_line_chart(df)
+            line_plt.savefig(line_buf, format='png', bbox_inches='tight')
+            line_buf.seek(0)
+            send_telegram_image(CHAT_ID, line_buf, caption="Biểu đồ cảm xúc theo thời gian")
+            line_plt.close()
             if success:
-                st.success("✅ Đã tự động gửi kết quả về Telegram!")
+                st.success("✅ Đã tự động gửi kết quả và biểu đồ về Telegram!")
             else:
                 st.error(f"❌ Gửi Telegram thất bại: {error}")
         

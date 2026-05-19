@@ -11,9 +11,9 @@ API_KEY = "AIzaSyDo1_HgQDTSqw1BIezKMu45Y3BYKk091Tw"
 TELEGRAM_BOT_TOKEN = "8606918938:AAFlcQ33rMCw8z-uB6wYm96M8NG3SUfqkvE"
 TELEGRAM_API = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
 
-print("⏳ Đang tải mô hình PhoBERT...")
-sentiment_analyzer = pipeline("sentiment-analysis", model="wonrax/phobert-base-vietnamese-sentiment")
-print("✅ Mô hình PhoBERT đã sẵn sàng!")
+print("[LOADING] Loading DistilBERT Multilingual model...")
+sentiment_analyzer = pipeline("sentiment-analysis", model="lxyuan/distilbert-base-multilingual-cased-sentiments-student")
+print("[READY] DistilBERT Multilingual model is ready!")
 
 # ============================================
 # YOUTUBE FUNCTIONS
@@ -49,8 +49,32 @@ def analyze_youtube_video(url):
     """Phân tích video YouTube và trả về kết quả"""
     try:
         video_id = extract_video_id(url)
-        youtube = build('youtube', 'v3', developerKey=API_KEY)
-        all_comments = get_all_comments(youtube, video_id, max_total=1000)
+        try:
+            youtube = build('youtube', 'v3', developerKey=API_KEY)
+            all_comments = get_all_comments(youtube, video_id, max_total=1000)
+            offline_warning = ""
+        except Exception as e:
+            # Chế độ dự phòng offline (Offline Backup Mode) phòng trường hợp mất mạng / hết hạn quota API
+            import os
+            import pandas as pd
+            if os.path.exists("binh_luan_youtube.csv"):
+                try:
+                    offline_df = pd.read_csv("binh_luan_youtube.csv")
+                    col_candidates = ["BinhLuan", "Bình luận", offline_df.columns[0]]
+                    comment_col = None
+                    for c in col_candidates:
+                        if c in offline_df.columns:
+                            comment_col = c
+                            break
+                    if comment_col:
+                        all_comments = offline_df[comment_col].dropna().tolist()[:1000]
+                        offline_warning = "⚠️ *[Offline Mode]* Không kết nối được API YouTube. Sử dụng dữ liệu lưu trữ dự phòng!\n\n"
+                    else:
+                        return None, "❌ Không thể kết nối API YouTube và không tìm thấy cột dữ liệu hợp lệ trong file offline."
+                except Exception as offline_err:
+                    return None, f"❌ Không thể kết nối API YouTube và gặp lỗi đọc dữ liệu offline: {offline_err}"
+            else:
+                return None, "❌ Không thể kết nối API YouTube (Hết quota/Mất mạng) và không có file offline dự phòng."
         
         if not all_comments:
             return None, "❌ Video không có bình luận hoặc không tìm thấy video."
@@ -63,13 +87,13 @@ def analyze_youtube_video(url):
             try:
                 short = comment[:200]
                 result = sentiment_analyzer(short, truncation=True)[0]
-                label_ai = result['label']
+                label_ai = result['label'].upper()
                 conf = result['score']
                 
-                if label_ai == 'POS':
+                if label_ai in ['POS', 'POSITIVE']:
                     label = "Tích cực"
                     score = round(conf * 10, 1)
-                elif label_ai == 'NEG':
+                elif label_ai in ['NEG', 'NEGATIVE']:
                     label = "Tiêu cực"
                     score = round((1 - conf) * 10, 1)
                 else:
@@ -101,7 +125,7 @@ def analyze_youtube_video(url):
             summary = f"🔴 TIÊU CỰC ({pos_pct}% tích cực)"
             rec = "❌ Không đề xuất"
         
-        result_text = f"""🔴 *YouTube Comment AI Analyzer*
+        result_text = f"""{offline_warning}🔴 *YouTube Comment AI Analyzer*
 
 📺 *Link:* {url}
 ⭐ *Điểm:* {avg_score}/10 ({star_rating}/5 sao)
@@ -178,9 +202,9 @@ def extract_youtube_link(text):
 # MAIN LOOP
 # ============================================
 def main():
-    print("🤖 Telegram Bot đang chạy...")
-    print("📩 Gửi link YouTube cho bot để phân tích!")
-    print("⛔ Nhấn Ctrl+C để dừng\n")
+    print("[RUNNING] Telegram Bot is running...")
+    print("[INFO] Send YouTube links to the bot to analyze!")
+    print("[INFO] Press Ctrl+C to stop\n")
     
     offset = None
     
@@ -247,10 +271,10 @@ Gửi link YouTube cho bot, ví dụ:
             time.sleep(2)
             
         except KeyboardInterrupt:
-            print("\n👋 Bot đã dừng!")
+            print("\n[STOPPED] Bot has stopped!")
             break
         except Exception as e:
-            print(f"❌ Lỗi: {e}")
+            print(f"[ERROR] Error: {e}")
             time.sleep(5)
 
 if __name__ == "__main__":
