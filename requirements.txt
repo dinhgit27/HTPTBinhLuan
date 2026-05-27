@@ -8,6 +8,7 @@ numpy
 # ── Machine Learning / NLP ───────────────────────────
 transformers
 torch
+torchvision
 scikit-learn
 underthesea
 

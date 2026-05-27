@@ -54,60 +54,60 @@ def get_platform_theme(p_name):
         "youtube": {
             "name": "YouTube",
             "icon": "🔴",
-            "bg_color": "#0a0a0a",
-            "glow": "rgba(255, 0, 0, 0.15)",
-            "primary": "#FF0000",
-            "primary_grad": "linear-gradient(135deg, #FF0000, #CC0000)",
+            "bg_color": "#080101",
+            "glow": "rgba(255, 0, 85, 0.25)",
+            "primary": "#ff0055",
+            "primary_grad": "linear-gradient(135deg, #ff0055 0%, #ff5500 100%)",
             "rec_pos": "Nên xem video",
             "rec_neg": "Bỏ qua video này"
         },
         "tiktok": {
             "name": "TikTok",
             "icon": "🎵",
-            "bg_color": "#0a0a0a",
-            "glow": "rgba(0, 242, 254, 0.15)",
+            "bg_color": "#000508",
+            "glow": "rgba(0, 242, 254, 0.25)",
             "primary": "#00f2fe",
-            "primary_grad": "linear-gradient(135deg, #00f2fe, #fe0979)",
+            "primary_grad": "linear-gradient(135deg, #00f2fe 0%, #fe0979 100%)",
             "rec_pos": "Rất đáng xem",
             "rec_neg": "Flop chắc rồi"
         },
         "shopee": {
             "name": "Shopee",
             "icon": "🛍️",
-            "bg_color": "#120a05",
-            "glow": "rgba(238, 77, 45, 0.15)",
-            "primary": "#EE4D2D",
-            "primary_grad": "linear-gradient(135deg, #EE4D2D, #FF7337)",
+            "bg_color": "#0b0400",
+            "glow": "rgba(255, 102, 0, 0.25)",
+            "primary": "#ff6600",
+            "primary_grad": "linear-gradient(135deg, #ff6600 0%, #ffaa00 100%)",
             "rec_pos": "Nên mua ngay",
             "rec_neg": "Không nên mua"
         },
         "facebook": {
             "name": "Facebook",
             "icon": "👥",
-            "bg_color": "#050a12",
-            "glow": "rgba(24, 119, 242, 0.15)",
-            "primary": "#1877F2",
-            "primary_grad": "linear-gradient(135deg, #1877F2, #0A52B5)",
+            "bg_color": "#00030a",
+            "glow": "rgba(0, 153, 255, 0.25)",
+            "primary": "#0099ff",
+            "primary_grad": "linear-gradient(135deg, #0099ff 0%, #00d4ff 100%)",
             "rec_pos": "Bài viết hay",
             "rec_neg": "Thông tin độc hại"
         },
         "lazada": {
             "name": "Lazada",
             "icon": "💙",
-            "bg_color": "#0a0a1a",
-            "glow": "rgba(15, 20, 109, 0.15)",
-            "primary": "#0F146D",
-            "primary_grad": "linear-gradient(135deg, #0F146D, #F53D2D)",
+            "bg_color": "#04000b",
+            "glow": "rgba(139, 92, 246, 0.25)",
+            "primary": "#8b5cf6",
+            "primary_grad": "linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)",
             "rec_pos": "Nên mua ngay",
             "rec_neg": "Không nên mua"
         },
         "tiki": {
             "name": "Tiki",
             "icon": "📦",
-            "bg_color": "#0a121a",
-            "glow": "rgba(26, 148, 255, 0.15)",
-            "primary": "#1A94FF",
-            "primary_grad": "linear-gradient(135deg, #1A94FF, #007BFF)",
+            "bg_color": "#000508",
+            "glow": "rgba(0, 229, 255, 0.25)",
+            "primary": "#00e5ff",
+            "primary_grad": "linear-gradient(135deg, #00e5ff 0%, #0084ff 100%)",
             "rec_pos": "Nên mua ngay",
             "rec_neg": "Không nên mua"
         }
@@ -130,75 +130,191 @@ theme = get_platform_theme(st.session_state['current_platform'])
 # Inject CSS Theme
 st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap');
+    
     * {{ font-family: 'Inter', sans-serif !important; }}
-    .stApp {{ background: linear-gradient(135deg, {theme['bg_color']} 0%, #0f0f0f 50%, {theme['bg_color']} 100%) !important; }}
-    #MainMenu, footer, header, .stDeployButton {{ display: none !important; }}
-    .glass-card {{
-        background: rgba(31, 31, 31, 0.6) !important;
-        backdrop-filter: blur(20px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 24px !important;
-        padding: 2rem !important;
-        margin-bottom: 1.5rem !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
-        transition: all 0.3s ease !important;
+    
+    .stApp {{ 
+        background: radial-gradient(circle at 50% 50%, {theme['bg_color']} 0%, #030303 100%) !important; 
     }}
+    
+    #MainMenu, footer, header, .stDeployButton {{ display: none !important; }}
+    
+    .glass-card {{
+        background: rgba(10, 10, 16, 0.75) !important;
+        backdrop-filter: blur(25px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+        border-radius: 24px !important;
+        padding: 2.2rem !important;
+        margin-bottom: 1.8rem !important;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 
+                    inset 0 0 20px rgba(255, 255, 255, 0.01) !important;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        position: relative;
+    }}
+    
+    .glass-card::before {{
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        border-radius: 24px;
+        pointer-events: none;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    }}
+    
     .hero-section {{
         text-align: center;
-        padding: 3rem 2rem;
-        background: linear-gradient(135deg, {theme['glow']} 0%, transparent 50%);
+        padding: 4rem 2rem;
+        background: radial-gradient(ellipse at center, {theme['glow']} 0%, transparent 75%);
         border-radius: 24px;
-        margin-bottom: 2rem;
-        border: 1px solid rgba(255,255,255,0.05);
+        margin-bottom: 2.5rem;
+        border: 1px dashed rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
     }}
-    .hero-title {{ font-size: 3.5rem; font-weight: 900; color: #F1F1F1; line-height: 1.1; }}
+    
+    .hero-title {{ 
+        font-family: 'Orbitron', sans-serif !important;
+        font-size: 3.8rem; 
+        font-weight: 900; 
+        color: #FFFFFF; 
+        line-height: 1.1;
+        letter-spacing: 2px;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+    }}
+    
     .hero-title span {{
         background: {theme['primary_grad']};
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        font-family: 'Orbitron', sans-serif !important;
+        text-shadow: 0 0 40px {theme['primary']}55;
     }}
+    
     .stTextInput > div > div > input {{
-        background: rgba(40, 40, 40, 0.8) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
+        background: rgba(5, 5, 10, 0.85) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.07) !important;
         border-radius: 16px !important;
-        color: #F1F1F1 !important;
-        padding: 1rem 1.25rem !important;
+        color: #FFFFFF !important;
+        padding: 1.1rem 1.4rem !important;
+        font-size: 1.05rem !important;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.8) !important;
+        transition: all 0.3s ease !important;
     }}
+    
     .stTextInput > div > div > input:focus {{
         border-color: {theme['primary']} !important;
-        box-shadow: 0 0 0 3px {theme['glow']} !important;
+        box-shadow: 0 0 20px {theme['primary']}33, inset 0 2px 4px rgba(0,0,0,0.8) !important;
     }}
+    
     .stButton > button {{
         background: {theme['primary_grad']} !important;
-        color: white !important;
-        border: none !important;
+        color: #FFFFFF !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
         border-radius: 16px !important;
-        padding: 0.875rem 2.5rem !important;
+        padding: 0.95rem 2.5rem !important;
         font-size: 1.1rem !important;
-        font-weight: 700 !important;
-        box-shadow: 0 4px 20px {theme['glow']} !important;
+        font-weight: 800 !important;
+        font-family: 'Orbitron', sans-serif !important;
+        letter-spacing: 1px;
+        box-shadow: 0 0 25px {theme['primary']}44 !important;
         width: 100% !important;
-        transition: transform 0.2s ease !important;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
     }}
-    .stButton > button:hover {{ transform: scale(1.02); }}
-    .star-glow {{ color: #FFD700; text-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700; font-size: 2.5rem; animation: pulse 2s ease-in-out infinite alternate; }}
-    .star-dim {{ color: #333; font-size: 2.5rem; }}
-    @keyframes pulse {{ from {{ text-shadow: 0 0 20px #FFD700; }} to {{ text-shadow: 0 0 30px #FFD700, 0 0 50px #FFA500; }} }}
+    
+    .stButton > button:hover {{ 
+        transform: translateY(-2px) !important;
+        box-shadow: 0 0 35px {theme['primary']}aa !important;
+        border-color: rgba(255,255,255,0.3) !important;
+    }}
+    
+    .stButton > button:active {{
+        transform: translateY(1px) !important;
+    }}
+    
+    .star-glow {{ 
+        color: #FFD700; 
+        text-shadow: 0 0 20px #FFD700, 0 0 40px #FFA500, 0 0 60px #FFD700; 
+        font-size: 2.8rem; 
+        animation: neonPulse 2s ease-in-out infinite alternate; 
+    }}
+    
+    .star-dim {{ 
+        color: rgba(255,255,255,0.05); 
+        font-size: 2.8rem; 
+        text-shadow: none;
+    }}
+    
+    @keyframes neonPulse {{ 
+        from {{ text-shadow: 0 0 15px #FFD700, 0 0 30px #FFA500; }} 
+        to {{ text-shadow: 0 0 25px #FFD700, 0 0 50px #FFA500, 0 0 70px #FFD700; }} 
+    }}
+    
     .stat-box {{
-        background: rgba(255,255,255,0.03);
-        border-radius: 16px;
-        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.015) !important;
+        border-radius: 18px;
+        padding: 1.6rem;
         text-align: center;
-        border: 1px solid rgba(255,255,255,0.05);
-        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.03) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+        transition: all 0.4s ease;
     }}
-    .stat-box:hover {{ background: rgba(255,255,255,0.05); transform: translateY(-5px); }}
-    .badge-pos {{ background: linear-gradient(135deg, rgba(76,175,80,0.2), rgba(76,175,80,0.05)) !important; border: 1px solid rgba(76,175,80,0.3) !important; color: #81C784 !important; padding: 0.4rem 1rem !important; border-radius: 999px !important; font-weight: 600 !important; }}
-    .badge-neg {{ background: linear-gradient(135deg, rgba(244,67,54,0.2), rgba(244,67,54,0.05)) !important; border: 1px solid rgba(244,67,54,0.3) !important; color: #E57373 !important; padding: 0.4rem 1rem !important; border-radius: 999px !important; font-weight: 600 !important; }}
-    .badge-neu {{ background: linear-gradient(135deg, rgba(158,158,158,0.2), rgba(158,158,158,0.05)) !important; border: 1px solid rgba(158,158,158,0.3) !important; color: #BDBDBD !important; padding: 0.4rem 1rem !important; border-radius: 999px !important; font-weight: 600 !important; }}
-    .chart-container {{ background: rgba(31,31,31,0.4); border-radius: 24px; padding: 2rem; border: 1px solid rgba(255,255,255,0.05); }}
-    hr {{ border-color: rgba(255,255,255,0.05) !important; margin: 2rem 0 !important; }}
+    
+    .stat-box:hover {{ 
+        background: rgba(255, 255, 255, 0.03) !important; 
+        transform: translateY(-6px);
+        border-color: {theme['primary']}55 !important;
+        box-shadow: 0 10px 25px {theme['primary']}15 !important;
+    }}
+    
+    .badge-pos {{ 
+        background: rgba(16, 185, 129, 0.08) !important; 
+        border: 1.5px solid #10b981 !important; 
+        color: #34d399 !important; 
+        padding: 0.5rem 1.5rem !important; 
+        border-radius: 999px !important; 
+        font-weight: 700 !important; 
+        letter-spacing: 0.5px;
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.25) !important;
+        text-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+    }}
+    
+    .badge-neg {{ 
+        background: rgba(239, 68, 68, 0.08) !important; 
+        border: 1.5px solid #ef4444 !important; 
+        color: #f87171 !important; 
+        padding: 0.5rem 1.5rem !important; 
+        border-radius: 999px !important; 
+        font-weight: 700 !important; 
+        letter-spacing: 0.5px;
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.25) !important;
+        text-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+    }}
+    
+    .badge-neu {{ 
+        background: rgba(107, 114, 128, 0.08) !important; 
+        border: 1.5px solid #6b7280 !important; 
+        color: #d1d5db !important; 
+        padding: 0.5rem 1.5rem !important; 
+        border-radius: 999px !important; 
+        font-weight: 700 !important; 
+        letter-spacing: 0.5px;
+        box-shadow: 0 0 15px rgba(107, 114, 128, 0.15) !important;
+    }}
+    
+    .chart-container {{ 
+        background: rgba(10, 10, 16, 0.5); 
+        border-radius: 24px; 
+        padding: 2.2rem; 
+        border: 1px solid rgba(255, 255, 255, 0.03); 
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    }}
+    
+    hr {{ 
+        border-color: rgba(255, 255, 255, 0.04) !important; 
+        margin: 2.5rem 0 !important; 
+    }}
 </style>
 """, unsafe_allow_html=True)
 
