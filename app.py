@@ -815,6 +815,130 @@ def firebase_auth(email, password, mode="login"):
         return {"success": False, "error": f"Lỗi kết nối server: {str(e)}"}
 
 
+# ============================================
+# FIREBASE FIRESTORE REST API IMPLEMENTATION
+# ============================================
+import base64
+import json
+from datetime import datetime, timezone
+
+def get_project_id_from_token(id_token):
+    try:
+        parts = id_token.split('.')
+        if len(parts) >= 2:
+            payload_b64 = parts[1]
+            payload_b64 += '=' * (4 - len(payload_b64) % 4)
+            payload_json = base64.urlsafe_b64decode(payload_b64).decode('utf-8')
+            payload = json.loads(payload_json)
+            return payload.get('aud') # The audience (aud) matches the Firebase Project ID
+    except Exception:
+        pass
+    return None
+
+def save_history(id_token, email, url, platform, score):
+    project_id = get_project_id_from_token(id_token)
+    if not project_id:
+        return {"success": False, "error": "Không thể giải mã Project ID từ token."}
+    
+    url_api = f"https://firestore.googleapis.com/v1/projects/{project_id}/databases/(default)/documents/history"
+    
+    headers = {
+        "Authorization": f"Bearer {id_token}",
+        "Content-Type": "application/json"
+    }
+    
+    timestamp_str = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    
+    payload = {
+        "fields": {
+            "email": {"stringValue": email},
+            "url": {"stringValue": url},
+            "platform": {"stringValue": platform},
+            "score": {"doubleValue": float(score)},
+            "timestamp": {"stringValue": timestamp_str}
+        }
+    }
+    
+    try:
+        response = requests.post(url_api, json=payload, headers=headers, timeout=10)
+        if response.status_code == 200:
+            return {"success": True, "data": response.json()}
+        else:
+            res_data = response.json()
+            error_msg = res_data.get("error", {}).get("message", f"HTTP {response.status_code}")
+            return {"success": False, "error": error_msg}
+    except Exception as e:
+        return {"success": False, "error": f"Lỗi kết nối Firestore: {str(e)}"}
+
+def fetch_history(id_token, email):
+    project_id = get_project_id_from_token(id_token)
+    if not project_id:
+        return {"success": False, "error": "Không thể giải mã Project ID từ token."}
+        
+    url_api = f"https://firestore.googleapis.com/v1/projects/{project_id}/databases/(default)/documents:runQuery"
+    
+    headers = {
+        "Authorization": f"Bearer {id_token}",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "structuredQuery": {
+            "from": [{"collectionId": "history"}],
+            "where": {
+                "fieldFilter": {
+                    "field": {"fieldPath": "email"},
+                    "op": "EQUAL",
+                    "value": {"stringValue": email}
+                }
+            },
+            "limit": 50
+        }
+    }
+    
+    try:
+        response = requests.post(url_api, json=payload, headers=headers, timeout=10)
+        if response.status_code == 200:
+            res_list = response.json()
+            history_records = []
+            
+            for item in res_list:
+                doc = item.get("document")
+                if doc and "fields" in doc:
+                    fields = doc.get("fields", {})
+                    rec_email = fields.get("email", {}).get("stringValue", "")
+                    rec_url = fields.get("url", {}).get("stringValue", "")
+                    rec_platform = fields.get("platform", {}).get("stringValue", "")
+                    
+                    # Handle both double and integer values for score
+                    score_field = fields.get("score", {})
+                    rec_score = 0.0
+                    if "doubleValue" in score_field:
+                        rec_score = float(score_field.get("doubleValue", 0.0))
+                    elif "integerValue" in score_field:
+                        rec_score = float(score_field.get("integerValue", 0))
+                        
+                    rec_timestamp = fields.get("timestamp", {}).get("stringValue", "")
+                    
+                    history_records.append({
+                        "email": rec_email,
+                        "url": rec_url,
+                        "platform": rec_platform,
+                        "score": rec_score,
+                        "timestamp": rec_timestamp
+                    })
+            
+            # Sort in Python by timestamp descending
+            history_records.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+            return {"success": True, "data": history_records}
+        else:
+            res_data = response.json()
+            error_msg = res_data.get("error", {}).get("message", f"HTTP {response.status_code}")
+            return {"success": False, "error": error_msg}
+    except Exception as e:
+        return {"success": False, "error": f"Lỗi truy vấn Firestore: {str(e)}"}
+
+
 # Initialize session state for user & navigation
 if 'user' not in st.session_state:
     st.session_state['user'] = None
@@ -824,6 +948,8 @@ if 'analysis_results' not in st.session_state:
     st.session_state['analysis_results'] = None
 if 'telegram_sent' not in st.session_state:
     st.session_state['telegram_sent'] = False
+if 'show_history' not in st.session_state:
+    st.session_state['show_history'] = False
 
 
 def send_telegram_message(payload):
@@ -1118,15 +1244,88 @@ else:
         </div>
         """, unsafe_allow_html=True)
     with nav_cols[1]:
-        st.button("🕒 Lịch sử", key="nav_history_btn", use_container_width=True)
+        if st.button("🕒 Lịch sử", key="nav_history_btn", use_container_width=True):
+            st.session_state['show_history'] = True
+            st.rerun()
     with nav_cols[2]:
         if st.button("🚪 Đăng xuất", key="nav_logout_btn", use_container_width=True):
             st.session_state['user'] = None
             st.session_state['analysis_results'] = None
             st.session_state['telegram_sent'] = False
+            st.session_state['show_history'] = False
             st.rerun()
             
     st.markdown("<hr style='margin: 0.5rem 0 2rem;'>", unsafe_allow_html=True)
+
+    if st.session_state.get('show_history', False):
+        st.markdown("""
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1.5rem;">
+            <h3 style="color:#00f2fe; margin:0; text-shadow:0 0 10px rgba(0, 242, 254, 0.3);">🕒</h3>
+            <h3 style="color:#FFFFFF; margin:0;">Lịch sử phân tích</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        email = st.session_state['user']['email']
+        id_token = st.session_state['user']['idToken']
+        
+        with st.spinner("Đang tải lịch sử từ Firebase..."):
+            history_res = fetch_history(id_token, email)
+            
+        if not history_res["success"]:
+            st.error(f"Không thể lấy lịch sử: {history_res['error']}")
+            st.info("💡 Lưu ý: Hãy đảm bảo bạn đã kích hoạt Cloud Firestore trong Firebase Console và cấu hình Rule cho phép truy cập.")
+        else:
+            records = history_res["data"]
+            if not records:
+                st.info("Bạn chưa thực hiện phân tích nào hoặc lịch sử trống.")
+            else:
+                st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+                for idx, item in enumerate(records):
+                    try:
+                        time_part = item['timestamp'].split('T')[0]
+                        p_icons = {
+                            "youtube": "🔴 YouTube",
+                            "tiktok": "🎵 TikTok",
+                            "shopee": "🛍️ Shopee",
+                            "facebook": "👥 Facebook",
+                            "lazada": "💙 Lazada",
+                            "tiki": "📦 Tiki"
+                        }
+                        plat_text = p_icons.get(item['platform'].lower(), item['platform'])
+                    except Exception:
+                        time_part = "N/A"
+                        plat_text = item['platform']
+                        
+                    cols_item = st.columns([1.5, 4.5, 1.5, 2.5])
+                    with cols_item[0]:
+                        st.markdown(f"<span style='color:#00f2fe;font-weight:600;'>{plat_text}</span>", unsafe_allow_html=True)
+                    with cols_item[1]:
+                        short_url = item['url']
+                        if len(short_url) > 60:
+                            short_url = short_url[:57] + "..."
+                        st.markdown(f"<a href='{item['url']}' target='_blank' style='color:#cbd5e1;text-decoration:none;'>{short_url}</a>", unsafe_allow_html=True)
+                    with cols_item[2]:
+                        st.markdown(f"<span style='font-family:\"Orbitron\", sans-serif;font-weight:800;color:#10b981;'>{item['score']:.1f} / 10</span>", unsafe_allow_html=True)
+                    with cols_item[3]:
+                        sub_cols = st.columns([1.5, 1])
+                        with sub_cols[0]:
+                            if st.button("🔄 Chạy lại", key=f"re_run_{idx}", use_container_width=True):
+                                st.session_state['current_url'] = item['url']
+                                st.session_state['current_platform'] = item['platform']
+                                st.session_state['show_history'] = False
+                                st.session_state['analysis_results'] = None
+                                st.session_state['trigger_analysis'] = True
+                                st.rerun()
+                        with sub_cols[1]:
+                            st.markdown(f"<span style='color:#6b7280;font-size:0.85rem;line-height:2.2;'>{time_part}</span>", unsafe_allow_html=True)
+                    st.markdown("<hr style='margin:0.8rem 0;opacity:0.1;'>", unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+                
+        if st.button("⬅️ Quay lại Dashboard", key="back_to_dashboard_btn"):
+            st.session_state['show_history'] = False
+            st.rerun()
+            
+        st.stop()
 
     # UI - HERO
     st.markdown(f"""
@@ -1165,7 +1364,9 @@ else:
         st.markdown('</div>', unsafe_allow_html=True)
 
     # ANALYZE
-    if analyze_clicked:
+    if analyze_clicked or st.session_state.get('trigger_analysis', False):
+        if st.session_state.get('trigger_analysis', False):
+            st.session_state['trigger_analysis'] = False
         try:
             progress_placeholder = st.empty()
             
@@ -1317,6 +1518,14 @@ else:
                     if len(pain_points_data) < 2:
                         pain_points_data.append(fb)
             
+            # Save to Firestore history (silently)
+            try:
+                id_token = st.session_state['user']['idToken']
+                email = st.session_state['user']['email']
+                save_history(id_token, email, st.session_state['current_url'], st.session_state['current_platform'], avg_score)
+            except Exception:
+                pass
+
             # Save to session state
             st.session_state['analysis_results'] = {
                 'df': df,
