@@ -1,8 +1,7 @@
 import requests
 import time
-import re
-from googleapiclient.discovery import build
 from transformers import pipeline
+from platform_scrapers import get_comments, detect_platform
 
 # ============================================
 # CONFIG
@@ -15,69 +14,28 @@ print("[LOADING] Loading DistilBERT Multilingual model...")
 sentiment_analyzer = pipeline("sentiment-analysis", model="lxyuan/distilbert-base-multilingual-cased-sentiments-student")
 print("[READY] DistilBERT Multilingual model is ready!")
 
-# ============================================
-# YOUTUBE FUNCTIONS
-# ============================================
-def extract_video_id(url):
-    if "v=" in url:
-        return url.split("v=")[1].split("&")[0]
-    elif "youtu.be/" in url:
-        return url.split("youtu.be/")[1].split("?")[0]
-    else:
-        return url.split("/")[-1].split("?")[0]
+def get_platform_info(platform):
+    """Lấy thông tin nhận diện UI cho nền tảng"""
+    info = {
+        "youtube": {"name": "YouTube", "icon": "🔴", "rec_pos": "✅ Nên xem/đề xuất", "rec_neg": "❌ Không đề xuất"},
+        "tiktok": {"name": "TikTok", "icon": "🎵", "rec_pos": "✅ Rất đáng xem", "rec_neg": "❌ Bỏ qua"},
+        "shopee": {"name": "Shopee", "icon": "🛍️", "rec_pos": "✅ Nên mua", "rec_neg": "❌ Né gấp"},
+        "facebook": {"name": "Facebook", "icon": "👥", "rec_pos": "✅ Bài viết hay", "rec_neg": "❌ Thông tin toxic"}
+    }
+    return info.get(platform, {"name": "Website", "icon": "🌐", "rec_pos": "✅ Nên xem", "rec_neg": "❌ Không đề xuất"})
 
-def get_all_comments(youtube, video_id, max_total=1000):
-    all_comments = []
-    next_page_token = None
-    while len(all_comments) < max_total:
-        request = youtube.commentThreads().list(
-            part="snippet", videoId=video_id, maxResults=100,
-            pageToken=next_page_token, textFormat="plainText"
-        )
-        response = request.execute()
-        for item in response['items']:
-            comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
-            all_comments.append(comment)
-            if len(all_comments) >= max_total:
-                break
-        next_page_token = response.get('nextPageToken')
-        if not next_page_token:
-            break
-    return all_comments
-
-def analyze_youtube_video(url):
-    """Phân tích video YouTube và trả về kết quả"""
+def analyze_link(url):
+    """Phân tích video/link đa nền tảng và trả về kết quả"""
     try:
-        video_id = extract_video_id(url)
-        try:
-            youtube = build('youtube', 'v3', developerKey=API_KEY)
-            all_comments = get_all_comments(youtube, video_id, max_total=1000)
-            offline_warning = ""
-        except Exception as e:
-            # Chế độ dự phòng offline (Offline Backup Mode) phòng trường hợp mất mạng / hết hạn quota API
-            import os
-            import pandas as pd
-            if os.path.exists("binh_luan_youtube.csv"):
-                try:
-                    offline_df = pd.read_csv("binh_luan_youtube.csv")
-                    col_candidates = ["BinhLuan", "Bình luận", offline_df.columns[0]]
-                    comment_col = None
-                    for c in col_candidates:
-                        if c in offline_df.columns:
-                            comment_col = c
-                            break
-                    if comment_col:
-                        all_comments = offline_df[comment_col].dropna().tolist()[:1000]
-                        offline_warning = "⚠️ *[Offline Mode]* Không kết nối được API YouTube. Sử dụng dữ liệu lưu trữ dự phòng!\n\n"
-                    else:
-                        return None, "❌ Không thể kết nối API YouTube và không tìm thấy cột dữ liệu hợp lệ trong file offline."
-                except Exception as offline_err:
-                    return None, f"❌ Không thể kết nối API YouTube và gặp lỗi đọc dữ liệu offline: {offline_err}"
-            else:
-                return None, "❌ Không thể kết nối API YouTube (Hết quota/Mất mạng) và không có file offline dự phòng."
+        all_comments, platform, is_offline = get_comments(url, 1000, API_KEY)
+        p_info = get_platform_info(platform)
+        
+        offline_warning = ""
+        if is_offline:
+            offline_warning = f"⚠️ *[Offline Mode]* Mạng chậm hoặc API chặn. Sử dụng dữ liệu dự phòng của {p_info['name']}!\n\n"
         
         if not all_comments:
-            return None, "❌ Video không có bình luận hoặc không tìm thấy video."
+            return None, f"❌ Không tìm thấy bình luận nào cho link {p_info['name']} này."
         
         data = []
         total_score = 0
@@ -114,7 +72,7 @@ def analyze_youtube_video(url):
         
         if star_rating >= 4.0:
             summary = f"🟢 RẤT TÍCH CỰC ({pos_pct}% tích cực)"
-            rec = "✅ Nên đề xuất"
+            rec = p_info["rec_pos"]
         elif star_rating >= 3.0:
             summary = f"🟡 KHÁ TÍCH CỰC ({pos_pct}% tích cực)"
             rec = "⚠️ Cân nhắc"
@@ -123,18 +81,17 @@ def analyze_youtube_video(url):
             rec = "❓ Cần xem xét"
         else:
             summary = f"🔴 TIÊU CỰC ({pos_pct}% tích cực)"
-            rec = "❌ Không đề xuất"
+            rec = p_info["rec_neg"]
         
-        result_text = f"""{offline_warning}🔴 *YouTube Comment AI Analyzer*
+        result_text = f"""{offline_warning}{p_info['icon']} *{p_info['name']} Comment AI Analyzer*
 
-📺 *Link:* {url}
+🔗 *Link:* {url}
 ⭐ *Điểm:* {avg_score}/10 ({star_rating}/5 sao)
 
-📊 *Thống kê:*
+📊 *Thống kê ({total} bình luận):*
 • 🟢 Tích cực: {sentiment_counts['Tích cực']} ({round(sentiment_counts['Tích cực']/total*100,1)}%)
 • 🔴 Tiêu cực: {sentiment_counts['Tiêu cực']} ({round(sentiment_counts['Tiêu cực']/total*100,1)}%)
 • ⚪ Trung tính: {sentiment_counts['Trung tính']} ({round(sentiment_counts['Trung tính']/total*100,1)}%)
-• 💬 Tổng: {total} bình luận
 
 💡 *Đánh giá:* {summary}
 📌 *Đề xuất:* {rec}
@@ -142,13 +99,12 @@ def analyze_youtube_video(url):
         return result_text, None
         
     except Exception as e:
-        return None, f"❌ Lỗi: {str(e)}"
+        return None, f"❌ Lỗi xử lý: {str(e)}"
 
 # ============================================
-# TELEGRAM BOT
+# TELEGRAM BOT CORE
 # ============================================
 def get_updates(offset=None):
-    """Lấy tin nhắn mới từ Telegram"""
     url = f"{TELEGRAM_API}/getUpdates"
     params = {"offset": offset, "limit": 10}
     try:
@@ -159,12 +115,12 @@ def get_updates(offset=None):
         return {"ok": False}
 
 def send_message(chat_id, text):
-    """Gửi tin nhắn qua Telegram"""
     url = f"{TELEGRAM_API}/sendMessage"
     payload = {
         "chat_id": chat_id,
         "text": text,
-        "parse_mode": "Markdown"
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": True
     }
     try:
         response = requests.post(url, json=payload, timeout=10)
@@ -173,37 +129,9 @@ def send_message(chat_id, text):
         print(f"⚠️ Lỗi gửi tin nhắn: {e}")
         return False
 
-def is_youtube_link(text):
-    """Kiểm tra xem text có phải link YouTube không"""
-    youtube_patterns = [
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=[\w-]+',
-        r'(?:https?:\/\/)?(?:www\.)?youtu\.be\/[\w-]+',
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/[\w-]+'
-    ]
-    for pattern in youtube_patterns:
-        if re.search(pattern, text):
-            return True
-    return False
-
-def extract_youtube_link(text):
-    """Trích xuất link YouTube từ text"""
-    youtube_patterns = [
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=[\w-]+',
-        r'(?:https?:\/\/)?(?:www\.)?youtu\.be\/[\w-]+',
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/[\w-]+'
-    ]
-    for pattern in youtube_patterns:
-        match = re.search(pattern, text)
-        if match:
-            return match.group(0)
-    return None
-
-# ============================================
-# MAIN LOOP
-# ============================================
 def main():
-    print("[RUNNING] Telegram Bot is running...")
-    print("[INFO] Send YouTube links to the bot to analyze!")
+    print("[RUNNING] Multi-Platform Telegram Bot is running...")
+    print("[INFO] Send YouTube, TikTok, Shopee, or Facebook links to analyze!")
     print("[INFO] Press Ctrl+C to stop\n")
     
     offset = None
@@ -219,54 +147,45 @@ def main():
             for update in updates.get("result", []):
                 offset = update["update_id"] + 1
                 
-                if "message" not in update:
+                if "message" not in update or "text" not in update["message"]:
                     continue
                 
                 message = update["message"]
                 chat_id = message["chat"]["id"]
+                text = message["text"].strip()
                 
-                # Chỉ xử lý tin nhắn text
-                if "text" not in message:
-                    continue
-                
-                text = message["text"]
-                
-                # Kiểm tra lệnh /start
                 if text == "/start":
-                    welcome_msg = """👋 *Chào mừng bạn đến với YouTube Comment AI Analyzer!*
+                    welcome_msg = """👋 *Chào mừng đến với AI Comment Analyzer Đa Nền Tảng!*
 
-🤖 Bot này giúp bạn phân tích cảm xúc bình luận YouTube bằng AI PhoBERT.
+🤖 Bot sử dụng AI để phân tích cảm xúc bình luận thời gian thực.
+Hỗ trợ 4 nền tảng lớn:
+🔴 *YouTube* (Đánh giá video)
+🎵 *TikTok* (Phân tích trend)
+🛍️ *Shopee* (Nhận định chất lượng hàng hóa)
+👥 *Facebook* (Dư luận bài đăng)
 
-📩 *Cách dùng:*
-Gửi link YouTube cho bot, ví dụ:
-`https://www.youtube.com/watch?v=xxxxx`
-
-📊 Bot sẽ trả về:
-• Điểm đánh giá (0-10)
-• Phân bố sentiment
-• Đề xuất nên/không nên xem
-
-⚡ Bắt đầu ngay bằng cách gửi link YouTube!
+📩 *Cách dùng:* Chỉ cần dán link vào đây, bot sẽ tự động nhận diện và phân tích!
 """
                     send_message(chat_id, welcome_msg)
                     continue
                 
-                # Kiểm tra link YouTube
-                if is_youtube_link(text):
-                    link = extract_youtube_link(text)
+                # Bắt mọi link http/https
+                if text.startswith("http://") or text.startswith("https://"):
+                    p_name = detect_platform(text)
+                    if p_name == "unknown":
+                        send_message(chat_id, "❓ Link không thuộc hệ sinh thái hỗ trợ (YouTube, TikTok, Shopee, Facebook). Vui lòng thử lại!")
+                        continue
+                        
+                    p_info = get_platform_info(p_name)
+                    send_message(chat_id, f"⏳ Đang phân tích bình luận {p_info['name']}... Vui lòng đợi!")
                     
-                    # Thông báo đang xử lý
-                    send_message(chat_id, "⏳ Đang phân tích video... Vui lòng đợi!")
-                    
-                    # Phân tích
-                    result, error = analyze_youtube_video(link)
-                    
+                    result, error = analyze_link(text)
                     if error:
                         send_message(chat_id, error)
                     else:
                         send_message(chat_id, result)
                 else:
-                    send_message(chat_id, "❓ Vui lòng gửi link YouTube hợp lệ!\n\nGửi `/start` để xem hướng dẫn.")
+                    send_message(chat_id, "❓ Vui lòng gửi một đường link (bắt đầu bằng http) hợp lệ!\n\nGửi `/start` để xem hướng dẫn.")
             
             time.sleep(2)
             

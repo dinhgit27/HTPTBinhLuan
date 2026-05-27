@@ -1,9 +1,27 @@
+# ── Web App ──────────────────────────────────────────
 streamlit
+
+# ── Data & Computation ───────────────────────────────
 pandas
-google-api-python-client
-matplotlib
+numpy
+
+# ── Machine Learning / NLP ───────────────────────────
 transformers
 torch
-requests
-wordcloud
+scikit-learn
 underthesea
+
+# ── Visualization ────────────────────────────────────
+matplotlib
+wordcloud
+
+# ── HTTP / API ───────────────────────────────────────
+requests
+google-api-python-client
+
+# ── Web Server (api_server.py) ───────────────────────
+flask
+flask-cors
+
+# ── Environment Variables ────────────────────────────
+python-dotenv

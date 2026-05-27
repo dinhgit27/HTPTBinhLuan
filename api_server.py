@@ -1,14 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from googleapiclient.discovery import build
 import os
 import pandas as pd
 from transformers import pipeline
 import platform
 import warnings
-import re
-from collections import Counter
-from underthesea import word_tokenize
+from platform_scrapers import get_comments, detect_platform
 
 # Tắt các cảnh báo không cần thiết
 warnings.simplefilter('ignore', UserWarning)
@@ -28,34 +25,6 @@ def get_ai_model(model_name):
         print(f"[API SERVER] Mô hình {model_name} đã sẵn sàng!")
     return cached_models[model_name]
 
-# Helper functions
-def extract_video_id(url):
-    if "v=" in url:
-        return url.split("v=")[1].split("&")[0]
-    elif "youtu.be/" in url:
-        return url.split("youtu.be/")[1].split("?")[0]
-    else:
-        return url.split("/")[-1].split("?")[0]
-
-def get_all_comments(youtube, video_id, max_total=1000):
-    all_comments = []
-    next_page_token = None
-    while len(all_comments) < max_total:
-        request = youtube.commentThreads().list(
-            part="snippet", videoId=video_id, maxResults=100,
-            pageToken=next_page_token, textFormat="plainText"
-        )
-        response = request.execute()
-        for item in response['items']:
-            comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
-            all_comments.append(comment)
-            if len(all_comments) >= max_total:
-                break
-        next_page_token = response.get('nextPageToken')
-        if not next_page_token:
-            break
-    return all_comments
-
 @app.route('/api/status', methods=['GET'])
 def get_status():
     """Endpoint kiểm tra trạng thái máy chủ (Health Check)"""
@@ -63,49 +32,30 @@ def get_status():
         "status": "online",
         "system": platform.system(),
         "api_ready": True,
-        "message": "Phân tán API Server đang hoạt động tốt!"
+        "message": "Phân tán API Server đa nền tảng đang hoạt động tốt!"
     }), 200
 
 @app.route('/api/analyze', methods=['POST', 'GET'])
 def analyze():
-    """Endpoint nhận URL/Video ID và tiến hành phân tích cảm xúc và thống kê"""
-    # Nhận tham số đầu vào từ JSON (POST) hoặc Query Parameters (GET)
+    """Endpoint nhận URL và tiến hành phân tích cảm xúc đa nền tảng"""
     data_input = request.get_json() if request.is_json else request.values
     
     url = data_input.get("url")
     if not url:
         return jsonify({"success": False, "error": "Vui lòng cung cấp tham số 'url'!"}), 400
         
-    lang = data_input.get("lang", "vi")  # 'vi' (PhoBERT) hoặc 'en' (DistilBERT)
+    lang = data_input.get("lang", "vi")
     max_comments = int(data_input.get("max_comments", 200))
     
     # Thiết lập pipeline phân tích
     model_name = "wonrax/phobert-base-vietnamese-sentiment" if lang == "vi" else "lxyuan/distilbert-base-multilingual-cased-sentiments-student"
     
     try:
-        video_id = extract_video_id(url)
-        using_offline = False
-        
-        # 1. Thu thập dữ liệu (YouTube API có fallback offline)
-        try:
-            youtube = build('youtube', 'v3', developerKey=API_KEY)
-            all_comments = get_all_comments(youtube, video_id, max_total=max_comments)
-        except Exception:
-            # Fallback sang offline
-            if os.path.exists("binh_luan_youtube.csv"):
-                offline_df = pd.read_csv("binh_luan_youtube.csv")
-                col_candidates = ["BinhLuan", "Bình luận", offline_df.columns[0]]
-                comment_col = next((c for c in col_candidates if c in offline_df.columns), None)
-                if comment_col:
-                    all_comments = offline_df[comment_col].dropna().tolist()[:max_comments]
-                    using_offline = True
-                else:
-                    return jsonify({"success": False, "error": "API YouTube lỗi và dữ liệu offline không hợp lệ."}), 500
-            else:
-                return jsonify({"success": False, "error": "API YouTube lỗi và không có file lưu trữ offline dự phòng."}), 500
+        # 1. Thu thập dữ liệu qua platform_scrapers (Tự động nhận diện nền tảng)
+        all_comments, detected_platform, using_offline = get_comments(url, max_comments, API_KEY)
         
         if not all_comments:
-            return jsonify({"success": False, "error": "Không tìm thấy bình luận nào!"}), 404
+            return jsonify({"success": False, "error": "Không tìm thấy bình luận nào cho liên kết này!"}), 404
             
         # 2. Phân tích cảm xúc dùng AI Pipeline
         sentiment_analyzer = get_ai_model(model_name)
@@ -142,25 +92,34 @@ def analyze():
         star_rating = round(avg_score / 2, 1)
         pos_pct = round((sentiment_counts["Tích cực"] / total) * 100, 1)
         
+        # Đề xuất dựa theo nền tảng
+        if detected_platform == "shopee":
+            rec_pos = "Nên mua"
+            rec_mid = "Cân nhắc kỹ"
+            rec_neg = "Không nên mua"
+        else:
+            rec_pos = "Nên đề xuất"
+            rec_mid = "Cân nhắc"
+            rec_neg = "Không đề xuất"
+
         if star_rating >= 4.0:
             summary = f"RẤT TÍCH CỰC ({pos_pct}% tích cực)"
-            recommendation = "Nên đề xuất"
+            recommendation = rec_pos
         elif star_rating >= 3.0:
             summary = f"KHÁ TÍCH CỰC ({pos_pct}% tích cực)"
-            recommendation = "Cân nhắc"
+            recommendation = rec_mid
         elif star_rating >= 2.0:
             summary = f"TRUNG BÌNH ({pos_pct}% tích cực)"
             recommendation = "Cần xem xét"
         else:
             summary = f"TIÊU CỰC ({pos_pct}% tích cực)"
-            recommendation = "Không đề xuất"
+            recommendation = rec_neg
             
-        # Trả về kết quả JSON chuẩn hóa
         return jsonify({
             "success": True,
+            "platform": detected_platform,
             "offline_mode": using_offline,
             "overall": {
-                "video_id": video_id,
                 "url": url,
                 "total_comments": total,
                 "average_score": avg_score,
@@ -180,5 +139,5 @@ def analyze():
         return jsonify({"success": False, "error": str(e)}), 500
 
 if __name__ == '__main__':
-    # Chạy trên cổng 5000 (Cổng phân tán tiêu chuẩn)
+    # Chạy trên cổng 5000
     app.run(host='0.0.0.0', port=5000, debug=True)

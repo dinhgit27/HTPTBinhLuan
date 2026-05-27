@@ -10,13 +10,56 @@ import warnings
 # Ẩn các cảnh báo thiếu Glyph từ Matplotlib khi thực hiện cơ chế fallback font
 warnings.simplefilter('ignore', UserWarning)
 
-# Cấu hình font chữ đa ngôn ngữ hỗ trợ cả Tiếng Việt & Tiếng Trung/Nhật/Hàn cho biểu đồ
+# Cấu hình font chữ đa ngôn ngữ thông minh
 if platform.system() == "Windows":
     plt.rcParams['font.family'] = 'sans-serif'
-    plt.rcParams['font.sans-serif'] = ['Arial', 'Calibri', 'Segoe UI', 'Microsoft YaHei', 'SimHei', 'Arial Unicode MS']
+    # Các font chữ tiếng Việt cực kỳ ổn định mặc định
+    font_sans = ['Arial', 'Calibri', 'Segoe UI', 'Tahoma']
+    
+    # Kiểm tra xem có font tiếng Trung (CJK) nào thực sự được cài đặt trên máy không
+    import os
+    possible_cjk = [
+        ("C:\\Windows\\Fonts\\msyh.ttc", "Microsoft YaHei"),
+        ("C:\\Windows\\Fonts\\msyhbd.ttc", "Microsoft YaHei"),
+        ("C:\\Windows\\Fonts\\simhei.ttf", "SimHei"),
+        ("C:\\Windows\\Fonts\\simsun.ttc", "SimSun")
+    ]
+    for path, name in possible_cjk:
+        if os.path.exists(path):
+            if name not in font_sans:
+                font_sans.insert(0, name)
+                break  # Lấy font tiếng Trung tốt nhất tìm thấy đưa lên đầu tiên
+                
+    plt.rcParams['font.sans-serif'] = font_sans
 else:
     plt.rcParams['font.family'] = 'sans-serif'
     plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Liberation Sans', 'Arial']
+
+def get_vietnamese_font_path():
+    """Return a font path that supports Vietnamese and CJK characters.
+    Tries common Windows fonts first, then falls back to a Matplotlib sans‑serif font.
+    """
+    import os
+    windows_fonts = [
+        "C:\\Windows\\Fonts\\Arial.ttf",
+        "C:\\Windows\\Fonts\\Calibri.ttf",
+        "C:\\Windows\\Fonts\\SegoeUI.ttf",
+        "C:\\Windows\\Fonts\\tahoma.ttf",
+        "C:\\Windows\\Fonts\\msyh.ttc",  # Microsoft YaHei (covers CJK)
+        "C:\\Windows\\Fonts\\simhei.ttf",   # SimHei (Chinese)
+    ]
+    for path in windows_fonts:
+        if os.path.exists(path):
+            return path
+    # Fallback to any available sans‑serif font via matplotlib
+    try:
+        import matplotlib.font_manager as fm
+        fallback = fm.findfont(fm.FontProperties(family="sans-serif"))
+        if os.path.exists(fallback):
+            return fallback
+    except Exception:
+        pass
+    return None
 
 def extract_dates_from_comments(comments, date_pattern=r'\d{1,2}/\d{1,2}/\d{2,4}'):
     """
@@ -43,6 +86,8 @@ def plot_sentiment_line_chart(df, date_col=None, date_format="%d/%m/%Y"):
     Nếu không có cột ngày, sẽ random ngày cho demo
     """
     import numpy as np
+    import matplotlib.font_manager as fm
+    
     if date_col is None or date_col not in df.columns:
         # Sinh ngày ngẫu nhiên cho demo
         base = datetime.today().date()
@@ -101,13 +146,36 @@ def plot_sentiment_line_chart(df, date_col=None, date_format="%d/%m/%Y"):
         ax.spines[spine].set_color('#374151')
         ax.spines[spine].set_linewidth(1)
         
-    # Cấu hình nhãn trục và tiêu đề
-    ax.set_xlabel("Ngày", color='#9ca3af', fontsize=11, labelpad=10)
-    ax.set_ylabel("Số bình luận", color='#9ca3af', fontsize=11, labelpad=10)
-    ax.set_title("Xu hướng cảm xúc theo thời gian", color='#F1F1F1', fontsize=14, fontweight='bold', pad=20)
+    # Nạp font vật lý trực tiếp
+    font_path = get_vietnamese_font_path()
+    if font_path:
+        font_title = fm.FontProperties(fname=font_path, size=14, weight='bold')
+        font_label = fm.FontProperties(fname=font_path, size=11)
+        font_tick = fm.FontProperties(fname=font_path, size=10)
+        font_legend = fm.FontProperties(fname=font_path, size=10)
+    else:
+        font_title, font_label, font_tick, font_legend = None, None, None, None
+
+    # Cấu hình nhãn trục và tiêu đề bằng font chỉ định trực tiếp
+    if font_label:
+        ax.set_xlabel("Ngày", color='#9ca3af', fontproperties=font_label, labelpad=10)
+        ax.set_ylabel("Số bình luận", color='#9ca3af', fontproperties=font_label, labelpad=10)
+    else:
+        ax.set_xlabel("Ngày", color='#9ca3af', fontsize=11, labelpad=10)
+        ax.set_ylabel("Số bình luận", color='#9ca3af', fontsize=11, labelpad=10)
+        
+    if font_title:
+        ax.set_title("Xu hướng cảm xúc theo thời gian", color='#F1F1F1', fontproperties=font_title, pad=20)
+    else:
+        ax.set_title("Xu hướng cảm xúc theo thời gian", color='#F1F1F1', fontsize=14, fontweight='bold', pad=20)
     
     # Tùy chỉnh tick values (thông số trên trục)
     ax.tick_params(axis='both', colors='#9ca3af', labelsize=10)
+    if font_tick:
+        for ticklabel in ax.get_xticklabels():
+            ticklabel.set_fontproperties(font_tick)
+        for ticklabel in ax.get_yticklabels():
+            ticklabel.set_fontproperties(font_tick)
     
     # Tùy chỉnh chú thích (Legend) hiện đại
     legend = ax.legend(
@@ -117,7 +185,10 @@ def plot_sentiment_line_chart(df, date_col=None, date_format="%d/%m/%Y"):
     )
     for text in legend.get_texts():
         text.set_color('#F1F1F1')
-        text.set_fontsize(10)
+        if font_legend:
+            text.set_fontproperties(font_legend)
+        else:
+            text.set_fontsize(10)
         
     plt.tight_layout()
     return plt
