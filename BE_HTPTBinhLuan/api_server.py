@@ -27,7 +27,7 @@ app = Flask(__name__)
 CORS(app)  # Cho phép gọi API từ client web không bị lỗi CORS
 
 # Cấu hình API Key
-API_KEY = os.getenv("API_KEY", "AIzaSyDo1_HgQDTSqw1BIezKMu45Y3BYKk091Tw")
+API_KEY = os.getenv("API_KEY", "AIzaSyDSS2KKpjlQWC6e1RT45nqwfZuJm3MMo5s")
 
 # ============================================
 # CẤU HÌNH MODEL AI (PhoBERT - Chính xác cao)

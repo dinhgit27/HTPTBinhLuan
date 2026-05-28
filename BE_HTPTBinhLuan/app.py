@@ -764,7 +764,7 @@ load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8606918938:AAFlcQ33rMCw8z-uB6wYm96M8NG3SUfqkvE")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "8585436965")
 TELEGRAM_API = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
-API_KEY = os.getenv("API_KEY", "AIzaSyDo1_HgQDTSqw1BIezKMu45Y3BYKk091Tw")
+API_KEY = os.getenv("API_KEY", "AIzaSyDSS2KKpjlQWC6e1RT45nqwfZuJm3MMo5s")
 
 
 # ============================================

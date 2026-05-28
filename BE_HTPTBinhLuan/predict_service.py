@@ -11,7 +11,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 # 1. CẤU HÌNH
-API_KEY = "AIzaSyDo1_HgQDTSqw1BIezKMu45Y3BYKk091Tw"
+API_KEY = "AIzaSyDSS2KKpjlQWC6e1RT45nqwfZuJm3MMo5s"
 model = joblib.load('mo_hinh_ai.pkl')
 vectorizer = joblib.load('bo_tu_dien.pkl')
 
