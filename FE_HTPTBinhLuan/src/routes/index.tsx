@@ -10,6 +10,7 @@ import { Keywords } from "@/components/analyzer/Keywords";
 import { PainPoints } from "@/components/analyzer/PainPoints";
 import { SentimentTrend } from "@/components/analyzer/SentimentTrend";
 import { HistoryDrawer } from "@/components/analyzer/HistoryDrawer";
+import { ProfileModal } from "@/components/analyzer/ProfileModal";
 import { getStoredUser, setStoredUser, analyze, getModelStatus, UserSession, AnalysisResult, ModelStatus } from "@/lib/api";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
@@ -37,6 +38,7 @@ function Index() {
   const [progress, setProgress] = useState(0);
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const [modelStatus, setModelStatus] = useState<ModelStatus | null>(null);
 
   // Poll AI model status mỗi 5 giây cho đến khi ready
@@ -129,6 +131,7 @@ function Index() {
         user={user} 
         onLogout={handleLogout} 
         onOpenHistory={() => setShowHistory(true)} 
+        onOpenProfile={() => setShowProfile(true)}
       />
       <AnalyzerHero 
         url={url} 
@@ -258,6 +261,11 @@ function Index() {
         isOpen={showHistory} 
         onClose={() => setShowHistory(false)} 
         onSelectHistory={handleSelectHistory} 
+      />
+      <ProfileModal
+        isOpen={showProfile}
+        onClose={() => setShowProfile(false)}
+        userEmail={user?.email || ""}
       />
     </main>
   );

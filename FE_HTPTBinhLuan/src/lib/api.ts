@@ -194,3 +194,76 @@ export async function getModelStatus(): Promise<ModelStatus> {
     return { state: "error", ready: false, loading: false, error: "Không thể kết nối server", message: "Không thể kết nối server" };
   }
 }
+
+export interface UserProfile {
+  email: string;
+  user_id: string;
+  telegram_chat_id: number | null;
+  telegram_username: string | null;
+  auto_send_telegram: boolean;
+}
+
+export async function getUserProfile(): Promise<UserProfile> {
+  const user = getStoredUser();
+  if (!user || !user.idToken) {
+    throw new Error("Người dùng chưa đăng nhập");
+  }
+  
+  const response = await fetch(`${API_BASE_URL}/api/profile?email=${encodeURIComponent(user.email)}`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${user.idToken}`,
+    },
+  });
+  
+  const res = await response.json();
+  if (!response.ok || !res.success) {
+    throw new Error(res.error || "Lấy thông tin tài khoản thất bại");
+  }
+  return res.data as UserProfile;
+}
+
+export async function disconnectTelegram(): Promise<boolean> {
+  const user = getStoredUser();
+  if (!user || !user.idToken) {
+    throw new Error("Người dùng chưa đăng nhập");
+  }
+  
+  const response = await fetch(`${API_BASE_URL}/api/profile/telegram/disconnect`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${user.idToken}`,
+    },
+    body: JSON.stringify({ email: user.email }),
+  });
+  
+  const res = await response.json();
+  if (!response.ok || !res.success) {
+    throw new Error(res.error || "Ngắt kết nối Telegram thất bại");
+  }
+  return true;
+}
+
+export async function updateTelegramSettings(autoSendTelegram: boolean): Promise<boolean> {
+  const user = getStoredUser();
+  if (!user || !user.idToken) {
+    throw new Error("Người dùng chưa đăng nhập");
+  }
+  
+  const response = await fetch(`${API_BASE_URL}/api/profile/telegram/settings`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${user.idToken}`,
+    },
+    body: JSON.stringify({ email: user.email, auto_send_telegram: autoSendTelegram }),
+  });
+  
+  const res = await response.json();
+  if (!response.ok || !res.success) {
+    throw new Error(res.error || "Cập nhật cài đặt thất bại");
+  }
+  return true;
+}
+

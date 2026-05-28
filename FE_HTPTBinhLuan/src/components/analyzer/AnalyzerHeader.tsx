@@ -8,9 +8,10 @@ interface AnalyzerHeaderProps {
   user: UserSession | null;
   onLogout: () => void;
   onOpenHistory: () => void;
+  onOpenProfile: () => void;
 }
 
-export function AnalyzerHeader({ user, onLogout, onOpenHistory }: AnalyzerHeaderProps) {
+export function AnalyzerHeader({ user, onLogout, onOpenHistory, onOpenProfile }: AnalyzerHeaderProps) {
   const handleHistoryClick = () => {
     if (!user) {
       toast.error("Vui lòng đăng nhập để xem lịch sử!");
@@ -37,10 +38,13 @@ export function AnalyzerHeader({ user, onLogout, onOpenHistory }: AnalyzerHeader
         
         {user ? (
           <div className="flex items-center gap-3 md:gap-4">
-            <div className="hidden items-center gap-1.5 text-xs text-muted-foreground md:flex">
+            <button
+              onClick={onOpenProfile}
+              className="hidden items-center gap-1.5 text-xs text-muted-foreground md:flex hover:text-cyan transition cursor-pointer"
+            >
               <User className="h-3.5 w-3.5 text-cyan" />
               <span>{user.email}</span>
-            </div>
+            </button>
             <button
               onClick={onLogout}
               className="flex items-center gap-2 rounded-lg border border-border bg-card/40 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur-sm transition hover:border-red-500/40 hover:text-red-400 cursor-pointer"

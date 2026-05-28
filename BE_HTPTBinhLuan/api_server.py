@@ -627,6 +627,130 @@ def model_status():
 
 
 # ============================================
+# API ROUTES FOR USER PROFILE & TELEGRAM
+# ============================================
+def send_telegram_report_async(chat_id, url, avg_score, star_rating, total, sentiment_counts, summary, recommendation, platform_name):
+    p_emoji = "🌐"
+    if platform_name == "youtube": p_emoji = "🔴"
+    elif platform_name == "tiktok": p_emoji = "🎵"
+    elif platform_name == "shopee": p_emoji = "🛍️"
+    elif platform_name == "facebook": p_emoji = "👥"
+    
+    pos_pct = round((sentiment_counts["Tích cực"] / total) * 100, 1) if total else 0
+    neg_pct = round((sentiment_counts["Tiêu cực"] / total) * 100, 1) if total else 0
+    neu_pct = round((sentiment_counts["Trung tính"] / total) * 100, 1) if total else 0
+    
+    text = f"""{p_emoji} *Báo cáo Phân tích Bình luận từ Web*
+
+🔗 *Link:* {url}
+⭐ *Điểm trung bình:* {avg_score}/10 ({star_rating}/5 sao)
+
+📊 *Thống kê ({total} bình luận):*
+• 🟢 Tích cực: {sentiment_counts['Tích cực']} ({pos_pct}%)
+• 🔴 Tiêu cực: {sentiment_counts['Tiêu cực']} ({neg_pct}%)
+• ⚪ Trung tính: {sentiment_counts['Trung tính']} ({neu_pct}%)
+
+💡 *Đánh giá:* {summary}
+📌 *Đề xuất:* {recommendation}
+"""
+    bot_token = "8606918938:AAFlcQ33rMCw8z-uB6wYm96M8NG3SUfqkvE"
+    url_api = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": True
+    }
+    try:
+        requests.post(url_api, json=payload, timeout=5)
+    except Exception as e:
+        print(f"[TELEGRAM] Lỗi gửi báo cáo tự động: {e}")
+
+@app.route('/api/profile', methods=['GET'])
+def api_get_profile():
+    auth_header = request.headers.get('Authorization')
+    email = request.args.get('email')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return jsonify({"success": False, "error": "Yêu cầu cung cấp token xác thực hợp lệ!"}), 401
+    if not email:
+        return jsonify({"success": False, "error": "Yêu cầu cung cấp email!"}), 400
+    
+    if not os.path.exists(LOCAL_USERS_FILE):
+        return jsonify({"success": False, "error": "Người dùng không tồn tại!"}), 404
+        
+    try:
+        with open(LOCAL_USERS_FILE, 'r', encoding='utf-8') as f:
+            users = json.load(f)
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Lỗi đọc dữ liệu: {str(e)}"}), 500
+        
+    if email not in users:
+        return jsonify({"success": False, "error": "Người dùng không tồn tại!"}), 404
+        
+    user_data = users[email]
+    
+    return jsonify({
+        "success": True,
+        "data": {
+            "email": email,
+            "user_id": user_data.get("user_id"),
+            "telegram_chat_id": user_data.get("telegram_chat_id"),
+            "telegram_username": user_data.get("telegram_username"),
+            "auto_send_telegram": user_data.get("auto_send_telegram", False)
+        }
+    }), 200
+
+@app.route('/api/profile/telegram/disconnect', methods=['POST'])
+def api_disconnect_telegram():
+    auth_header = request.headers.get('Authorization')
+    data = request.get_json() or {}
+    email = data.get('email')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return jsonify({"success": False, "error": "Yêu cầu cung cấp token xác thực hợp lệ!"}), 401
+    if not email:
+        return jsonify({"success": False, "error": "Yêu cầu cung cấp email!"}), 400
+        
+    try:
+        with open(LOCAL_USERS_FILE, 'r', encoding='utf-8') as f:
+            users = json.load(f)
+            
+        if email in users:
+            users[email]["telegram_chat_id"] = None
+            users[email]["telegram_username"] = None
+            with open(LOCAL_USERS_FILE, 'w', encoding='utf-8') as f:
+                json.dump(users, f, ensure_ascii=False, indent=4)
+            return jsonify({"success": True, "message": "Đã ngắt kết nối Telegram!"}), 200
+        else:
+            return jsonify({"success": False, "error": "Người dùng không tồn tại!"}), 404
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Lỗi xử lý: {str(e)}"}), 500
+
+@app.route('/api/profile/telegram/settings', methods=['POST'])
+def api_telegram_settings():
+    auth_header = request.headers.get('Authorization')
+    data = request.get_json() or {}
+    email = data.get('email')
+    auto_send = data.get('auto_send_telegram', False)
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return jsonify({"success": False, "error": "Yêu cầu cung cấp token xác thực hợp lệ!"}), 401
+    if not email:
+        return jsonify({"success": False, "error": "Yêu cầu cung cấp email!"}), 400
+        
+    try:
+        with open(LOCAL_USERS_FILE, 'r', encoding='utf-8') as f:
+            users = json.load(f)
+            
+        if email in users:
+            users[email]["auto_send_telegram"] = auto_send
+            with open(LOCAL_USERS_FILE, 'w', encoding='utf-8') as f:
+                json.dump(users, f, ensure_ascii=False, indent=4)
+            return jsonify({"success": True, "message": "Đã cập nhật cài đặt!"}), 200
+        else:
+            return jsonify({"success": False, "error": "Người dùng không tồn tại!"}), 404
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Lỗi xử lý: {str(e)}"}), 500
+
+# ============================================
 # API ROUTE FOR ANALYSIS
 # ============================================
 def get_ai_model(model_name):
@@ -866,6 +990,22 @@ def analyze():
                 save_history(id_token, email_header, url, detected_platform, avg_score)
             except Exception as ex:
                 print(f"[API SERVER] Lỗi lưu lịch sử tự động: {ex}")
+
+            # Gửi báo cáo tự động qua Telegram nếu người dùng cấu hình
+            try:
+                with open(LOCAL_USERS_FILE, 'r', encoding='utf-8') as f:
+                    users = json.load(f)
+                user_data = users.get(email_header)
+                if user_data and user_data.get("telegram_chat_id") and user_data.get("auto_send_telegram", False):
+                    chat_id = user_data["telegram_chat_id"]
+                    t_thread = threading.Thread(
+                        target=send_telegram_report_async,
+                        args=(chat_id, url, avg_score, star_rating, total, sentiment_counts, summary, recommendation, detected_platform),
+                        daemon=True
+                    )
+                    t_thread.start()
+            except Exception as ex:
+                print(f"[API SERVER] Lỗi gửi báo cáo qua Telegram: {ex}")
  
         return jsonify({
             "success": True,
@@ -902,6 +1042,14 @@ def analyze():
         return jsonify({"success": False, "error": str(e)}), 500
 
 if __name__ == '__main__':
+    try:
+        import telegram_bot
+        print("[API SERVER] Khởi chạy Telegram Bot trong background...")
+        bot_thread = threading.Thread(target=telegram_bot.main, daemon=True)
+        bot_thread.start()
+    except Exception as bot_err:
+        print(f"[API SERVER] Không thể khởi chạy Telegram Bot: {bot_err}")
+
     # use_reloader=False: Tắt watchdog để tránh reload vô hạn khi tải PhoBERT/torch
     # PhoBERT cần ghi file vào site-packages khi tải lần đầu → watchdog hiểu nhầm là code thay đổi
     app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)

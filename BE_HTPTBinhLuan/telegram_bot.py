@@ -1,5 +1,9 @@
 import requests
 import time
+import os
+import json
+import re
+from datetime import datetime, timezone
 from transformers import pipeline
 from platform_scrapers import get_comments, detect_platform
 
@@ -154,7 +158,44 @@ def main():
                 chat_id = message["chat"]["id"]
                 text = message["text"].strip()
                 
-                if text == "/start":
+                if text.startswith("/start"):
+                    # Check if connection parameter is present
+                    parts = text.split("connect_")
+                    if len(parts) > 1:
+                        user_id = parts[1].strip()
+                        linked = False
+                        email = None
+                        
+                        try:
+                            if os.path.exists("users_local.json"):
+                                with open("users_local.json", "r", encoding="utf-8") as f:
+                                    users = json.load(f)
+                                for u_email, u_data in users.items():
+                                    if u_data.get("user_id") == user_id:
+                                        u_data["telegram_chat_id"] = chat_id
+                                        u_data["telegram_username"] = message["chat"].get("username") or message["chat"].get("first_name") or "User"
+                                        email = u_email
+                                        linked = True
+                                        break
+                                if linked:
+                                    with open("users_local.json", "w", encoding="utf-8") as f:
+                                        json.dump(users, f, ensure_ascii=False, indent=4)
+                        except Exception as e:
+                            print(f"[TELEGRAM BOT] Lỗi lưu liên kết: {e}")
+                            
+                        if linked:
+                            success_msg = f"""🎉 *Liên kết tài khoản thành công!*
+
+Tài khoản Telegram của bạn đã được kết nối với email: `{email}` trên hệ thống AI Comment Analyzer Pro.
+
+Từ bây giờ:
+1. Bạn sẽ tự động nhận được báo cáo phân tích tại đây khi chạy phân tích trên Website (nếu bật tùy chọn trong cài đặt Trang cá nhân).
+2. Bạn có thể gửi trực tiếp link YouTube, TikTok, Facebook, Shopee vào đây để bot phân tích và tự động lưu lịch sử vào tài khoản web của bạn!"""
+                            send_message(chat_id, success_msg)
+                        else:
+                            send_message(chat_id, "❌ Mã liên kết không hợp lệ hoặc tài khoản không tồn tại trên hệ thống. Vui lòng kiểm tra lại!")
+                        continue
+                        
                     welcome_msg = """👋 *Chào mừng đến với AI Comment Analyzer Đa Nền Tảng!*
 
 🤖 Bot sử dụng AI để phân tích cảm xúc bình luận thời gian thực.
@@ -171,6 +212,26 @@ Hỗ trợ 4 nền tảng lớn:
                 
                 # Bắt mọi link http/https
                 if text.startswith("http://") or text.startswith("https://"):
+                    # Check link authentication
+                    email = None
+                    try:
+                        if os.path.exists("users_local.json"):
+                            with open("users_local.json", "r", encoding="utf-8") as f:
+                                users = json.load(f)
+                            for u_email, u_data in users.items():
+                                if u_data.get("telegram_chat_id") == chat_id:
+                                    email = u_email
+                                    break
+                    except Exception as e:
+                        print(f"[TELEGRAM BOT] Lỗi đọc user list: {e}")
+                        
+                    if not email:
+                        connect_err_msg = """⚠️ *Tài khoản Telegram của bạn chưa được liên kết!*
+
+Vui lòng truy cập trang cá nhân của bạn trên website và click vào Email ở thanh menu -> **Kết nối Telegram** để thực hiện liên kết trước khi sử dụng bot nhé."""
+                        send_message(chat_id, connect_err_msg)
+                        continue
+
                     p_name = detect_platform(text)
                     if p_name == "unknown":
                         send_message(chat_id, "❓ Link không thuộc hệ sinh thái hỗ trợ (YouTube, TikTok, Shopee, Facebook). Vui lòng thử lại!")
@@ -184,6 +245,30 @@ Hỗ trợ 4 nền tảng lớn:
                         send_message(chat_id, error)
                     else:
                         send_message(chat_id, result)
+                        
+                        # Save to local history
+                        try:
+                            score_match = re.search(r"⭐ \*Điểm:\* ([\d\.]+)/10", result)
+                            avg_score = float(score_match.group(1)) if score_match else 5.0
+                            
+                            history = []
+                            if os.path.exists("history_local.json"):
+                                with open("history_local.json", "r", encoding="utf-8") as f:
+                                    history = json.load(f)
+                                    
+                            timestamp_str = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+                            new_record = {
+                                "email": email,
+                                "url": text,
+                                "platform": p_name,
+                                "score": avg_score,
+                                "timestamp": timestamp_str
+                            }
+                            history.append(new_record)
+                            with open("history_local.json", "w", encoding="utf-8") as f:
+                                json.dump(history, f, ensure_ascii=False, indent=4)
+                        except Exception as hist_err:
+                            print(f"[TELEGRAM BOT] Lỗi lưu lịch sử: {hist_err}")
                 else:
                     send_message(chat_id, "❓ Vui lòng gửi một đường link (bắt đầu bằng http) hợp lệ!\n\nGửi `/start` để xem hướng dẫn.")
             
