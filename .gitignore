@@ -1,0 +1,11 @@
+BE_HTPTBinhLuan/__pycache__/
+BE_HTPTBinhLuan/.venv/
+BE_HTPTBinhLuan/users_local.json
+BE_HTPTBinhLuan/history_local.json
+FE_HTPTBinhLuan/node_modules/
+FE_HTPTBinhLuan/dist/
+FE_HTPTBinhLuan/.env
+.env
+*.pyc
+.DS_Store
+Thumbs.db

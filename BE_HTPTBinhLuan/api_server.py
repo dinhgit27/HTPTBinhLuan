@@ -112,6 +112,140 @@ def fallback_extract_keywords(comments, top_k=15):
 
 
 # ============================================
+# LOCAL FALLBACK AUTH & HISTORY IMPLEMENTATION
+# ============================================
+LOCAL_USERS_FILE = "users_local.json"
+LOCAL_HISTORY_FILE = "history_local.json"
+
+def generate_local_token(email, user_id):
+    header = base64.urlsafe_b64encode(json.dumps({"alg": "HS256", "typ": "JWT"}).encode('utf-8')).decode('utf-8').replace('=', '')
+    payload = base64.urlsafe_b64encode(json.dumps({"aud": "local-project", "email": email, "user_id": user_id}).encode('utf-8')).decode('utf-8').replace('=', '')
+    signature = "local_signature"
+    return f"{header}.{payload}.{signature}"
+
+def local_auth(email, password, mode="login"):
+    import uuid
+    users = {}
+    if os.path.exists(LOCAL_USERS_FILE):
+        try:
+            with open(LOCAL_USERS_FILE, 'r', encoding='utf-8') as f:
+                users = json.load(f)
+        except Exception:
+            pass
+            
+    if mode == "signup":
+        if email in users:
+            return {"success": False, "error": "Email này đã được đăng ký tài khoản!"}
+        user_id = str(uuid.uuid4())
+        users[email] = {
+            "password": password,
+            "user_id": user_id
+        }
+        try:
+            with open(LOCAL_USERS_FILE, 'w', encoding='utf-8') as f:
+                json.dump(users, f, ensure_ascii=False, indent=4)
+        except Exception as e:
+            return {"success": False, "error": f"Lỗi lưu trữ tài khoản cục bộ: {str(e)}"}
+            
+        token = generate_local_token(email, user_id)
+        return {
+            "success": True,
+            "data": {
+                "idToken": token,
+                "email": email,
+                "localId": user_id,
+                "refreshToken": f"local_refresh_{user_id}",
+                "expiresIn": "3600"
+            }
+        }
+        
+    elif mode == "login":
+        if email not in users or users[email]["password"] != password:
+            return {"success": False, "error": "Mật khẩu không chính xác hoặc tài khoản không tồn tại!"}
+            
+        user_id = users[email]["user_id"]
+        token = generate_local_token(email, user_id)
+        return {
+            "success": True,
+            "data": {
+                "idToken": token,
+                "email": email,
+                "localId": user_id,
+                "refreshToken": f"local_refresh_{user_id}",
+                "expiresIn": "3600"
+            }
+        }
+        
+    else: # forgot password
+        if email not in users:
+            return {"success": False, "error": "Email này chưa được đăng ký!"}
+        return {"success": True, "data": {"message": "Đã gửi email khôi phục mật khẩu giả lập!"}}
+
+def save_history_local(email, url, platform_name, score):
+    history = []
+    if os.path.exists(LOCAL_HISTORY_FILE):
+        try:
+            with open(LOCAL_HISTORY_FILE, 'r', encoding='utf-8') as f:
+                history = json.load(f)
+        except Exception:
+            pass
+            
+    timestamp_str = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    new_record = {
+        "email": email,
+        "url": url,
+        "platform": platform_name,
+        "score": float(score),
+        "timestamp": timestamp_str
+    }
+    history.append(new_record)
+    
+    try:
+        with open(LOCAL_HISTORY_FILE, 'w', encoding='utf-8') as f:
+            json.dump(history, f, ensure_ascii=False, indent=4)
+        # Định dạng output để khớp cấu trúc response Firestore
+        return {"success": True, "data": {
+            "name": f"projects/local-project/databases/(default)/documents/history/{timestamp_str}",
+            "fields": {
+                "email": {"stringValue": email},
+                "url": {"stringValue": url},
+                "platform": {"stringValue": platform_name},
+                "score": {"doubleValue": float(score)},
+                "timestamp": {"stringValue": timestamp_str}
+            }
+        }}
+    except Exception as e:
+        return {"success": False, "error": f"Lỗi lưu lịch sử cục bộ: {str(e)}"}
+
+def fetch_history_local(email):
+    history = []
+    if os.path.exists(LOCAL_HISTORY_FILE):
+        try:
+            with open(LOCAL_HISTORY_FILE, 'r', encoding='utf-8') as f:
+                history = json.load(f)
+        except Exception:
+            pass
+            
+    user_history = [h for h in history if h.get("email") == email]
+    user_history = sorted(user_history, key=lambda x: x.get("timestamp", ""), reverse=True)
+    
+    formatted_history = []
+    for h in user_history:
+        formatted_history.append({
+            "document": {
+                "fields": {
+                    "email": {"stringValue": h["email"]},
+                    "url": {"stringValue": h["url"]},
+                    "platform": {"stringValue": h["platform"]},
+                    "score": {"doubleValue": h["score"]},
+                    "timestamp": {"stringValue": h["timestamp"]}
+                }
+            }
+        })
+    return {"success": True, "data": formatted_history}
+
+
+# ============================================
 # FIREBASE AUTH IMPLEMENTATION
 # ============================================
 def firebase_auth(email, password, mode="login"):
@@ -144,6 +278,12 @@ def firebase_auth(email, password, mode="login"):
             return {"success": True, "data": res_data}
         else:
             error_msg = res_data.get("error", {}).get("message", "Đã xảy ra lỗi!")
+            
+            # Fallback sang local auth nếu Firebase báo lỗi chưa cấu hình (Email/Password Auth method is disabled)
+            if "CONFIGURATION_NOT_FOUND" in error_msg or "OPERATION_NOT_ALLOWED" in error_msg:
+                print(f"[AUTH WARNING] Firebase Authentication chưa bật Email/Password. Fallback sang Local Auth cho: {email}")
+                return local_auth(email, password, mode)
+                
             if "EMAIL_NOT_FOUND" in error_msg:
                 error_msg = "Email này chưa được đăng ký!"
             elif "INVALID_PASSWORD" in error_msg:
@@ -156,7 +296,8 @@ def firebase_auth(email, password, mode="login"):
                 error_msg = "Mật khẩu quá yếu (tối thiểu phải 6 ký tự)!"
             return {"success": False, "error": error_msg}
     except Exception as e:
-        return {"success": False, "error": f"Lỗi kết nối server: {str(e)}"}
+        print(f"[AUTH WARNING] Lỗi kết nối Firebase: {e}. Fallback sang Local Auth.")
+        return local_auth(email, password, mode)
 
 
 # ============================================
@@ -177,8 +318,8 @@ def get_project_id_from_token(id_token):
 
 def save_history(id_token, email, url, platform_name, score):
     project_id = get_project_id_from_token(id_token)
-    if not project_id:
-        return {"success": False, "error": "Không thể giải mã Project ID từ token."}
+    if not project_id or project_id == "local-project":
+        return save_history_local(email, url, platform_name, score)
     
     url_api = f"https://firestore.googleapis.com/v1/projects/{project_id}/databases/(default)/documents/history"
     
@@ -204,16 +345,46 @@ def save_history(id_token, email, url, platform_name, score):
         if response.status_code == 200:
             return {"success": True, "data": response.json()}
         else:
-            res_data = response.json()
-            error_msg = res_data.get("error", {}).get("message", f"HTTP {response.status_code}")
-            return {"success": False, "error": error_msg}
+            # Fallback sang local history nếu Firestore bị lỗi quyền hạn hoặc cấu hình
+            print(f"[FIRESTORE WARNING] Firestore API lỗi (HTTP {response.status_code}). Fallback lưu lịch sử cục bộ.")
+            return save_history_local(email, url, platform_name, score)
     except Exception as e:
-        return {"success": False, "error": f"Lỗi kết nối Firestore: {str(e)}"}
+        print(f"[FIRESTORE WARNING] Lỗi kết nối Firestore: {e}. Fallback lưu lịch sử cục bộ.")
+        return save_history_local(email, url, platform_name, score)
 
 def fetch_history(id_token, email):
     project_id = get_project_id_from_token(id_token)
-    if not project_id:
-        return {"success": False, "error": "Không thể giải mã Project ID từ token."}
+    if not project_id or project_id == "local-project":
+        # Hàm fetch_history_local trả về format chứa fields.
+        # Chúng ta cần parse nó ra cấu trúc history_records như mong đợi của API.
+        local_res = fetch_history_local(email)
+        if not local_res["success"]:
+            return local_res
+        history_records = []
+        for item in local_res["data"]:
+            doc = item.get("document", {})
+            fields = doc.get("fields", {})
+            rec_email = fields.get("email", {}).get("stringValue", "")
+            rec_url = fields.get("url", {}).get("stringValue", "")
+            rec_platform = fields.get("platform", {}).get("stringValue", "")
+            
+            score_field = fields.get("score", {})
+            rec_score = 0.0
+            if "doubleValue" in score_field:
+                rec_score = float(score_field.get("doubleValue", 0.0))
+            elif "integerValue" in score_field:
+                rec_score = float(score_field.get("integerValue", 0))
+                
+            rec_timestamp = fields.get("timestamp", {}).get("stringValue", "")
+            
+            history_records.append({
+                "email": rec_email,
+                "url": rec_url,
+                "platform": rec_platform,
+                "score": rec_score,
+                "timestamp": rec_timestamp
+            })
+        return {"success": True, "data": history_records}
         
     url_api = f"https://firestore.googleapis.com/v1/projects/{project_id}/databases/(default)/documents:runQuery"
     
@@ -270,11 +441,68 @@ def fetch_history(id_token, email):
             history_records.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
             return {"success": True, "data": history_records}
         else:
-            res_data = response.json()
-            error_msg = res_data.get("error", {}).get("message", f"HTTP {response.status_code}")
-            return {"success": False, "error": error_msg}
+            # Fallback sang local history
+            print(f"[FIRESTORE WARNING] Firestore API lỗi (HTTP {response.status_code}). Fallback lấy lịch sử cục bộ.")
+            local_res = fetch_history_local(email)
+            if local_res["success"]:
+                # Parse cấu trúc
+                history_records = []
+                for item in local_res["data"]:
+                    doc = item.get("document", {})
+                    fields = doc.get("fields", {})
+                    rec_email = fields.get("email", {}).get("stringValue", "")
+                    rec_url = fields.get("url", {}).get("stringValue", "")
+                    rec_platform = fields.get("platform", {}).get("stringValue", "")
+                    
+                    score_field = fields.get("score", {})
+                    rec_score = 0.0
+                    if "doubleValue" in score_field:
+                        rec_score = float(score_field.get("doubleValue", 0.0))
+                    elif "integerValue" in score_field:
+                        rec_score = float(score_field.get("integerValue", 0))
+                        
+                    rec_timestamp = fields.get("timestamp", {}).get("stringValue", "")
+                    
+                    history_records.append({
+                        "email": rec_email,
+                        "url": rec_url,
+                        "platform": rec_platform,
+                        "score": rec_score,
+                        "timestamp": rec_timestamp
+                    })
+                return {"success": True, "data": history_records}
+            return local_res
     except Exception as e:
-        return {"success": False, "error": f"Lỗi truy vấn Firestore: {str(e)}"}
+        print(f"[FIRESTORE WARNING] Lỗi kết nối Firestore: {e}. Fallback lấy lịch sử cục bộ.")
+        local_res = fetch_history_local(email)
+        if local_res["success"]:
+            # Parse cấu trúc
+            history_records = []
+            for item in local_res["data"]:
+                doc = item.get("document", {})
+                fields = doc.get("fields", {})
+                rec_email = fields.get("email", {}).get("stringValue", "")
+                rec_url = fields.get("url", {}).get("stringValue", "")
+                rec_platform = fields.get("platform", {}).get("stringValue", "")
+                
+                score_field = fields.get("score", {})
+                rec_score = 0.0
+                if "doubleValue" in score_field:
+                    rec_score = float(score_field.get("doubleValue", 0.0))
+                elif "integerValue" in score_field:
+                    rec_score = float(score_field.get("integerValue", 0))
+                    
+                rec_timestamp = fields.get("timestamp", {}).get("stringValue", "")
+                
+                history_records.append({
+                    "email": rec_email,
+                    "url": rec_url,
+                    "platform": rec_platform,
+                    "score": rec_score,
+                    "timestamp": rec_timestamp
+                })
+            return {"success": True, "data": history_records}
+        return {"success": False, "error": f"Lỗi truy vấn Firestore & Local: {str(e)}"}
 
 
 # ============================================

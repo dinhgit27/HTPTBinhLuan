@@ -12,6 +12,7 @@ import { SentimentTrend } from "@/components/analyzer/SentimentTrend";
 import { HistoryDrawer } from "@/components/analyzer/HistoryDrawer";
 import { getStoredUser, setStoredUser, analyze, getModelStatus, UserSession, AnalysisResult, ModelStatus } from "@/lib/api";
 import { toast } from "sonner";
+import { Progress } from "@/components/ui/progress";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,6 +34,7 @@ function Index() {
   const [url, setUrl] = useState("https://youtu.be/7NFCMm4MRvI?si=7gt_0YLz3S0Z-pla");
   const [lang, setLang] = useState("vi");
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [modelStatus, setModelStatus] = useState<ModelStatus | null>(null);
@@ -66,6 +68,14 @@ function Index() {
   };
 
   const handleAnalyze = async (overrideUrl?: string) => {
+    // Kiểm tra xem người dùng đã đăng nhập chưa
+    const currentUser = getStoredUser();
+    if (!currentUser) {
+      toast.error("Vui lòng đăng nhập trước khi sử dụng tính năng phân tích bình luận!");
+      navigate({ to: "/login" });
+      return;
+    }
+
     const targetUrl = overrideUrl || url;
     if (!targetUrl) {
       toast.error("Vui lòng điền đường dẫn link!");
@@ -74,15 +84,34 @@ function Index() {
     
     setIsLoading(true);
     setResults(null);
+    setProgress(0);
+
+    // Bắt đầu bộ đếm tiến trình giả lập
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev < 30) return prev + 2;        // Tăng nhanh lúc đầu
+        if (prev < 70) return prev + 1;        // Tăng vừa phải
+        if (prev < 95) return prev + 0.35;     // Tăng chậm lại
+        if (prev < 98) return prev + 0.05;     // Treo ở gần 98%
+        return prev;
+      });
+    }, 150);
     
     try {
       const data = await analyze(targetUrl, lang);
-      setResults(data);
-      toast.success("Phân tích dữ liệu thành công!");
+      clearInterval(progressInterval);
+      setProgress(100);
+      
+      // Delay nhẹ để người dùng nhìn thấy 100% hoàn thành mượt mà
+      setTimeout(() => {
+        setResults(data);
+        toast.success("Phân tích dữ liệu thành công!");
+        setIsLoading(false);
+      }, 400);
     } catch (err: any) {
-      toast.error(err.message || "Không thể phân tích dữ liệu, vui lòng thử lại!");
-    } finally {
+      clearInterval(progressInterval);
       setIsLoading(false);
+      toast.error(err.message || "Không thể phân tích dữ liệu, vui lòng thử lại!");
     }
   };
 
@@ -192,11 +221,21 @@ function Index() {
 
       {isLoading && (
         <div className="relative z-10 flex flex-col items-center justify-center py-20">
-          <div className="h-16 w-16 animate-spin rounded-full border-4 border-cyan/20 border-t-cyan" />
-          <h3 className="mt-6 text-xl font-semibold text-foreground">
+          <div className="h-16 w-16 animate-spin rounded-full border-4 border-cyan/20 border-t-cyan mb-2" />
+          <h3 className="mt-4 text-xl font-semibold text-foreground">
             {modelStatus?.ready ? "Đang phân tích bằng AI PhoBERT..." : "Đang phân tích dữ liệu..."}
           </h3>
-          <p className="mt-2 text-sm text-muted-foreground">
+          
+          {/* Thanh tiến trình phân tích */}
+          <div className="mt-6 w-full max-w-md px-6 flex flex-col items-center">
+            <Progress value={progress} className="h-2 w-full bg-cyan/10 [&>div]:bg-cyan transition-all duration-300" />
+            <div className="mt-2 flex w-full justify-between text-xs text-muted-foreground">
+              <span>Đang xử lý dữ liệu...</span>
+              <span className="font-semibold text-cyan">{Math.round(progress)}%</span>
+            </div>
+          </div>
+
+          <p className="mt-4 text-sm text-muted-foreground">
             {modelStatus?.ready
               ? "AI đang xử lý hàng loạt — khoảng 15–60 giây tùy số bình luận."
               : "Đang dùng phân tích từ điển — kết quả ra ngay!"}
