@@ -1,0 +1,1954 @@
+{
+  "badge_text": "😐 Trung bình",
+  "badge_type": "neu",
+  "comments_sample": [
+    {
+      "comment": "Nội dung cực kỳ chill 😍",
+      "initials": "VA",
+      "likes": 3,
+      "name": "Nguyễn Văn An",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Cách dựng phim cực kỳ buồn ngủ cần cải thiện",
+      "initials": "TB",
+      "likes": 10,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Cách dựng phim thật sự tệ phí thời gian",
+      "initials": "HC",
+      "likes": 17,
+      "name": "Lê Hoàng Cường",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Quảng cáo cực kỳ nhảm nhí phí thời gian",
+      "initials": "MĐ",
+      "likes": 24,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Cách dựng phim rất nhạt nhẽo !",
+      "initials": "TT",
+      "likes": 31,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Quảng cáo quá nhiều nhảm nhí hụt hẫng",
+      "initials": "HH",
+      "likes": 38,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Kênh này quá tệ tắt đi luôn",
+      "initials": "NS",
+      "likes": 2,
+      "name": "Đặng Ngọc Sơn",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Âm thanh cực kỳ nhảm nhí chán hẳn",
+      "initials": "VA",
+      "likes": 9,
+      "name": "Nguyễn Văn An",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Nội dung quá rác tắt đi luôn",
+      "initials": "TB",
+      "likes": 16,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Kênh này rất buồn ngủ chán hẳn",
+      "initials": "HC",
+      "likes": 23,
+      "name": "Lê Hoàng Cường",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Âm thanh thật sự buồn ngủ cần cải thiện",
+      "initials": "MĐ",
+      "likes": 30,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Kênh này hơi nhạt nhẽo hụt hẫng",
+      "initials": "TT",
+      "likes": 37,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Nội dung rất cuốn ❤️",
+      "initials": "HH",
+      "likes": 1,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Nhạc quá rác !",
+      "initials": "NS",
+      "likes": 8,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Hình ảnh khá hay nha",
+      "initials": "VA",
+      "likes": 15,
+      "name": "Nguyễn Văn An",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Hình ảnh khá cuốn quá chừng",
+      "initials": "TB",
+      "likes": 22,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nhạc quá buồn ngủ chán hẳn",
+      "initials": "HC",
+      "likes": 29,
+      "name": "Lê Hoàng Cường",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Âm thanh quá nhiều nhảm nhí 😡",
+      "initials": "MĐ",
+      "likes": 36,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Kênh này khá đỉnh cao nha",
+      "initials": "TT",
+      "likes": 0,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Nội dung thật sự chill nha",
+      "initials": "HH",
+      "likes": 7,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Kênh này rất cuốn quá chừng",
+      "initials": "NS",
+      "likes": 14,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nhạc vô cùng sâu lắng quá chừng",
+      "initials": "VA",
+      "likes": 21,
+      "name": "Nguyễn Văn An",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Cách dựng phim cực kỳ nhảm nhí 😡",
+      "initials": "TB",
+      "likes": 28,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Hình ảnh khá sâu lắng 10 điểm",
+      "initials": "HC",
+      "likes": 35,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Beat nhạc thật sự chill ❤️",
+      "initials": "MĐ",
+      "likes": 42,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Quảng cáo thật sự nhảm nhí phí thời gian",
+      "initials": "TT",
+      "likes": 6,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nhạc quá cuốn quá chừng",
+      "initials": "HH",
+      "likes": 13,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Nội dung thật sự đỉnh cao luôn",
+      "initials": "NS",
+      "likes": 20,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Hình ảnh khá bổ ích ❤️",
+      "initials": "VA",
+      "likes": 27,
+      "name": "Nguyễn Văn An",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Dựng phim đỉnh thực sự, màu sắc nét căng, 10 điểm không có nhưng.",
+      "initials": "TB",
+      "likes": 34,
+      "name": "Trần Thị Bình",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Quảng cáo chèn vào quá nhiều, trải nghiệm cực kỳ ức chế.",
+      "initials": "HC",
+      "likes": 41,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Kênh này khá cuốn nhé",
+      "initials": "MĐ",
+      "likes": 5,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Kênh này quá nhiều ồn ào hụt hẫng",
+      "initials": "TT",
+      "likes": 12,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Cách truyền đạt cực kỳ đỉnh cao 10 điểm",
+      "initials": "HH",
+      "likes": 19,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Video vô cùng chất lượng ❤️",
+      "initials": "NS",
+      "likes": 26,
+      "name": "Đặng Ngọc Sơn",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Xin lỗi nhưng video này làm hời hợt quá, không bằng các tập trước.",
+      "initials": "VA",
+      "likes": 33,
+      "name": "Nguyễn Văn An",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Quảng cáo chèn vào quá nhiều, trải nghiệm cực kỳ ức chế.",
+      "initials": "TB",
+      "likes": 40,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Kênh này quá nhiều nhảm nhí phí thời gian",
+      "initials": "HC",
+      "likes": 4,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Nhạc quá hay mong chờ tập sau",
+      "initials": "MĐ",
+      "likes": 11,
+      "name": "Phạm Minh Đức",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Kênh này quá rác !",
+      "initials": "TT",
+      "likes": 18,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Video vô cùng hay ❤️",
+      "initials": "HH",
+      "likes": 25,
+      "name": "Vũ Huy Hoàng",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Hình ảnh khá sâu lắng 10 điểm",
+      "initials": "NS",
+      "likes": 32,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Bài hát rất chuyên nghiệp 10 điểm",
+      "initials": "VA",
+      "likes": 39,
+      "name": "Nguyễn Văn An",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Xin lỗi nhưng video này làm hời hợt quá, không bằng các tập trước.",
+      "initials": "TB",
+      "likes": 3,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Dựng phim đỉnh thực sự, màu sắc nét căng, 10 điểm không có nhưng.",
+      "initials": "HC",
+      "likes": 10,
+      "name": "Lê Hoàng Cường",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nội dung giật gân câu view chứ chả có giá trị gì cả.",
+      "initials": "MĐ",
+      "likes": 17,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nhạc nền quá to đè hết cả tiếng người nói, quá tệ.",
+      "initials": "TT",
+      "likes": 24,
+      "name": "Hoàng Thu Thảo",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Nhạc quá tệ !",
+      "initials": "HH",
+      "likes": 31,
+      "name": "Vũ Huy Hoàng",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Kênh này quá nhiều nhạt nhẽo 😡",
+      "initials": "NS",
+      "likes": 38,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Cách dựng phim thật sự tệ 😡",
+      "initials": "VA",
+      "likes": 2,
+      "name": "Nguyễn Văn An",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Xin lỗi nhưng video này làm hời hợt quá, không bằng các tập trước.",
+      "initials": "TB",
+      "likes": 9,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nhạc cực kỳ nhạt nhẽo thua",
+      "initials": "HC",
+      "likes": 16,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Cách dựng phim quá buồn ngủ phí thời gian",
+      "initials": "MĐ",
+      "likes": 23,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Hình ảnh cực kỳ sâu lắng luôn",
+      "initials": "TT",
+      "likes": 30,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Nhạc nền quá to đè hết cả tiếng người nói, quá tệ.",
+      "initials": "HH",
+      "likes": 37,
+      "name": "Vũ Huy Hoàng",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Âm thanh mic rè rè, nghe đau hết cả đầu, chán thật sự.",
+      "initials": "NS",
+      "likes": 1,
+      "name": "Đặng Ngọc Sơn",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nghe bài này xong thấy lòng bình yên đến lạ, ủng hộ kênh nhiều.",
+      "initials": "VA",
+      "likes": 8,
+      "name": "Nguyễn Văn An",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Âm thanh rất ồn ào 😡",
+      "initials": "TB",
+      "likes": 15,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Nội dung thật sự ồn ào 😡",
+      "initials": "HC",
+      "likes": 22,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Kênh này thật sự ồn ào thua",
+      "initials": "MĐ",
+      "likes": 29,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Video cực kỳ tệ hụt hẫng",
+      "initials": "TT",
+      "likes": 36,
+      "name": "Hoàng Thu Thảo",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Kênh này hơi ồn ào 😡",
+      "initials": "HH",
+      "likes": 0,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Nội dung giật gân câu view chứ chả có giá trị gì cả.",
+      "initials": "NS",
+      "likes": 7,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Kênh này khá chất lượng quá chừng",
+      "initials": "VA",
+      "likes": 14,
+      "name": "Nguyễn Văn An",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Beat nhạc cực kỳ ý nghĩa quá chừng",
+      "initials": "TB",
+      "likes": 21,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nội dung quá nhiều nhạt nhẽo 😡",
+      "initials": "HC",
+      "likes": 28,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Video quá nhiều rác tắt đi luôn",
+      "initials": "MĐ",
+      "likes": 35,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Nhạc hơi ồn ào 😡",
+      "initials": "TT",
+      "likes": 42,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Cách dựng phim thật sự chán hụt hẫng",
+      "initials": "HH",
+      "likes": 6,
+      "name": "Vũ Huy Hoàng",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Nội dung giật gân câu view chứ chả có giá trị gì cả.",
+      "initials": "NS",
+      "likes": 13,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Cách dựng phim rất nhạt nhẽo cần cải thiện",
+      "initials": "VA",
+      "likes": 20,
+      "name": "Nguyễn Văn An",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nội dung hơi thiếu tôn trọng người xem cần cải thiện",
+      "initials": "TB",
+      "likes": 27,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Video quá nhiều nhảm nhí tắt đi luôn",
+      "initials": "HC",
+      "likes": 34,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Nhạc rất nhảm nhí tắt đi luôn",
+      "initials": "MĐ",
+      "likes": 41,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Video rất đỉnh cao ❤️",
+      "initials": "TT",
+      "likes": 5,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nhạc vô cùng chill luôn",
+      "initials": "HH",
+      "likes": 12,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nội dung giật gân câu view chứ chả có giá trị gì cả.",
+      "initials": "NS",
+      "likes": 19,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Hướng dẫn chi tiết dễ hiểu, cảm ơn kênh rất nhiều nha.",
+      "initials": "VA",
+      "likes": 26,
+      "name": "Nguyễn Văn An",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Cách truyền đạt rất bổ ích ❤️",
+      "initials": "TB",
+      "likes": 33,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Nội dung hơi buồn ngủ cần cải thiện",
+      "initials": "HC",
+      "likes": 40,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Video thật sự sâu lắng luôn",
+      "initials": "MĐ",
+      "likes": 4,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Kênh này rất đỉnh cao mong chờ tập sau",
+      "initials": "TT",
+      "likes": 11,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Âm thanh cực kỳ thiếu tôn trọng người xem 😡",
+      "initials": "HH",
+      "likes": 18,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Kênh này quá nhạt nhẽo 😡",
+      "initials": "NS",
+      "likes": 25,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Video quá chán hụt hẫng",
+      "initials": "VA",
+      "likes": 32,
+      "name": "Nguyễn Văn An",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Cách dựng phim quá nhiều rác chán hẳn",
+      "initials": "TB",
+      "likes": 39,
+      "name": "Trần Thị Bình",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Cách truyền đạt thật sự hay nha",
+      "initials": "HC",
+      "likes": 3,
+      "name": "Lê Hoàng Cường",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Nhạc quá chất lượng 😍",
+      "initials": "MĐ",
+      "likes": 10,
+      "name": "Phạm Minh Đức",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Bài hát rất hay 😍",
+      "initials": "TT",
+      "likes": 17,
+      "name": "Hoàng Thu Thảo",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Cách dựng phim quá nhạt nhẽo 😡",
+      "initials": "HH",
+      "likes": 24,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Hình ảnh thật sự chất lượng nha",
+      "initials": "NS",
+      "likes": 31,
+      "name": "Đặng Ngọc Sơn",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Quảng cáo quá nhiều thiếu tôn trọng người xem 😡",
+      "initials": "VA",
+      "likes": 38,
+      "name": "Nguyễn Văn An",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Cách dựng phim quá nhiều ồn ào phí thời gian",
+      "initials": "TB",
+      "likes": 2,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Nghe bài này xong thấy lòng bình yên đến lạ, ủng hộ kênh nhiều.",
+      "initials": "HC",
+      "likes": 9,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Video cực kỳ chuyên nghiệp luôn",
+      "initials": "MĐ",
+      "likes": 16,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nhạc thật sự chán 😡",
+      "initials": "TT",
+      "likes": 23,
+      "name": "Hoàng Thu Thảo",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Dựng phim đỉnh thực sự, màu sắc nét căng, 10 điểm không có nhưng.",
+      "initials": "HH",
+      "likes": 30,
+      "name": "Vũ Huy Hoàng",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Nội dung giật gân câu view chứ chả có giá trị gì cả.",
+      "initials": "NS",
+      "likes": 37,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Nội dung bổ ích, học hỏi được rất nhiều từ video này.",
+      "initials": "VA",
+      "likes": 1,
+      "name": "Nguyễn Văn An",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Kênh này thật sự cuốn 😍",
+      "initials": "TB",
+      "likes": 8,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nhạc nền quá to đè hết cả tiếng người nói, quá tệ.",
+      "initials": "HC",
+      "likes": 15,
+      "name": "Lê Hoàng Cường",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Âm thanh quá ồn ào phí thời gian",
+      "initials": "MĐ",
+      "likes": 22,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Cách dựng phim hơi buồn ngủ phí thời gian",
+      "initials": "TT",
+      "likes": 29,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Cách dựng phim cực kỳ rác phí thời gian",
+      "initials": "HH",
+      "likes": 36,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Beat nhạc cực kỳ ý nghĩa 😍",
+      "initials": "NS",
+      "likes": 0,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Bật chế độ lặp lại nghe cả ngày không chán luôn á.",
+      "initials": "VA",
+      "likes": 7,
+      "name": "Nguyễn Văn An",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nhạc hơi thiếu tôn trọng người xem !",
+      "initials": "TB",
+      "likes": 14,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Kênh này vô cùng ý nghĩa ❤️",
+      "initials": "HC",
+      "likes": 21,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Xin lỗi nhưng video này làm hời hợt quá, không bằng các tập trước.",
+      "initials": "MĐ",
+      "likes": 28,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Âm thanh rất ồn ào 😡",
+      "initials": "TT",
+      "likes": 35,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Beat nhạc vô cùng ý nghĩa quá chừng",
+      "initials": "HH",
+      "likes": 42,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Quảng cáo quá nhạt nhẽo phí thời gian",
+      "initials": "NS",
+      "likes": 6,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Kênh này quá nhiều tệ chán hẳn",
+      "initials": "VA",
+      "likes": 13,
+      "name": "Nguyễn Văn An",
+      "score": 2.0,
+      "sentiment": "Tiêu cực",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Hình ảnh khá chill nha",
+      "initials": "TB",
+      "likes": 20,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Nhạc quá đỉnh cao nha",
+      "initials": "HC",
+      "likes": 27,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Cách dựng phim thật sự thiếu tôn trọng người xem 😡",
+      "initials": "MĐ",
+      "likes": 34,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nhạc thật sự sâu lắng 😍",
+      "initials": "TT",
+      "likes": 41,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Kênh này hơi buồn ngủ tắt đi luôn",
+      "initials": "HH",
+      "likes": 5,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Nhạc cực kỳ cuốn mong chờ tập sau",
+      "initials": "NS",
+      "likes": 12,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Video quá nhiều tệ 😡",
+      "initials": "VA",
+      "likes": 19,
+      "name": "Nguyễn Văn An",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nội dung cực kỳ tệ chán hẳn",
+      "initials": "TB",
+      "likes": 26,
+      "name": "Trần Thị Bình",
+      "score": 2.0,
+      "sentiment": "Tiêu cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Quảng cáo chèn vào quá nhiều, trải nghiệm cực kỳ ức chế.",
+      "initials": "HC",
+      "likes": 33,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Âm thanh mic rè rè, nghe đau hết cả đầu, chán thật sự.",
+      "initials": "MĐ",
+      "likes": 40,
+      "name": "Phạm Minh Đức",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Âm thanh quá ồn ào chán hẳn",
+      "initials": "TT",
+      "likes": 4,
+      "name": "Hoàng Thu Thảo",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Bật chế độ lặp lại nghe cả ngày không chán luôn á.",
+      "initials": "HH",
+      "likes": 11,
+      "name": "Vũ Huy Hoàng",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Quảng cáo cực kỳ thiếu tôn trọng người xem hụt hẫng",
+      "initials": "NS",
+      "likes": 18,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Cách dựng phim hơi rác chán hẳn",
+      "initials": "VA",
+      "likes": 25,
+      "name": "Nguyễn Văn An",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Quảng cáo chèn vào quá nhiều, trải nghiệm cực kỳ ức chế.",
+      "initials": "TB",
+      "likes": 32,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Quảng cáo chèn vào quá nhiều, trải nghiệm cực kỳ ức chế.",
+      "initials": "HC",
+      "likes": 39,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Kênh này quá ý nghĩa nha",
+      "initials": "MĐ",
+      "likes": 3,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nhạc nền quá to đè hết cả tiếng người nói, quá tệ.",
+      "initials": "TT",
+      "likes": 10,
+      "name": "Hoàng Thu Thảo",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nội dung hơi buồn ngủ !",
+      "initials": "HH",
+      "likes": 17,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Quảng cáo quá chán thua",
+      "initials": "NS",
+      "likes": 24,
+      "name": "Đặng Ngọc Sơn",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Cách dựng phim thật sự rác thua",
+      "initials": "VA",
+      "likes": 31,
+      "name": "Nguyễn Văn An",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Kênh này thật sự thiếu tôn trọng người xem cần cải thiện",
+      "initials": "TB",
+      "likes": 38,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Âm thanh cực kỳ rác cần cải thiện",
+      "initials": "HC",
+      "likes": 2,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Quảng cáo rất nhảm nhí chán hẳn",
+      "initials": "MĐ",
+      "likes": 9,
+      "name": "Phạm Minh Đức",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Nghe bài này xong thấy lòng bình yên đến lạ, ủng hộ kênh nhiều.",
+      "initials": "TT",
+      "likes": 16,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Nhạc rất chán phí thời gian",
+      "initials": "HH",
+      "likes": 23,
+      "name": "Vũ Huy Hoàng",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Kênh này rất nhảm nhí hụt hẫng",
+      "initials": "NS",
+      "likes": 30,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nội dung vô cùng sâu lắng 10 điểm",
+      "initials": "VA",
+      "likes": 37,
+      "name": "Nguyễn Văn An",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nhạc vô cùng sâu lắng ❤️",
+      "initials": "TB",
+      "likes": 1,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Nội dung giật gân câu view chứ chả có giá trị gì cả.",
+      "initials": "HC",
+      "likes": 8,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Hướng dẫn chi tiết dễ hiểu, cảm ơn kênh rất nhiều nha.",
+      "initials": "MĐ",
+      "likes": 15,
+      "name": "Phạm Minh Đức",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Nội dung rất nhảm nhí !",
+      "initials": "TT",
+      "likes": 22,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Hình ảnh thật sự ý nghĩa nhé",
+      "initials": "HH",
+      "likes": 29,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nội dung giật gân câu view chứ chả có giá trị gì cả.",
+      "initials": "NS",
+      "likes": 36,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Quảng cáo hơi chán chán hẳn",
+      "initials": "VA",
+      "likes": 0,
+      "name": "Nguyễn Văn An",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Quảng cáo rất tệ 😡",
+      "initials": "TB",
+      "likes": 7,
+      "name": "Trần Thị Bình",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Nội dung cực kỳ chill nhé",
+      "initials": "HC",
+      "likes": 14,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nhạc quá nhảm nhí hụt hẫng",
+      "initials": "MĐ",
+      "likes": 21,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Kênh này cực kỳ sâu lắng 10 điểm",
+      "initials": "TT",
+      "likes": 28,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Dựng phim đỉnh thực sự, màu sắc nét căng, 10 điểm không có nhưng.",
+      "initials": "HH",
+      "likes": 35,
+      "name": "Vũ Huy Hoàng",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Quảng cáo hơi thiếu tôn trọng người xem chán hẳn",
+      "initials": "NS",
+      "likes": 42,
+      "name": "Đặng Ngọc Sơn",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Video vô cùng chill ❤️",
+      "initials": "VA",
+      "likes": 6,
+      "name": "Nguyễn Văn An",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nhạc cực kỳ nhảm nhí chán hẳn",
+      "initials": "TB",
+      "likes": 13,
+      "name": "Trần Thị Bình",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Quảng cáo quá nhạt nhẽo thua",
+      "initials": "HC",
+      "likes": 20,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Cách truyền đạt cực kỳ cuốn mong chờ tập sau",
+      "initials": "MĐ",
+      "likes": 27,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Nhạc hơi nhạt nhẽo cần cải thiện",
+      "initials": "TT",
+      "likes": 34,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Âm thanh hơi rác cần cải thiện",
+      "initials": "HH",
+      "likes": 41,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Bật chế độ lặp lại nghe cả ngày không chán luôn á.",
+      "initials": "NS",
+      "likes": 5,
+      "name": "Đặng Ngọc Sơn",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Kênh này rất chán phí thời gian",
+      "initials": "VA",
+      "likes": 12,
+      "name": "Nguyễn Văn An",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Cách truyền đạt rất chill 10 điểm",
+      "initials": "TB",
+      "likes": 19,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Hình ảnh khá đỉnh cao nha",
+      "initials": "HC",
+      "likes": 26,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Hình ảnh khá ý nghĩa mong chờ tập sau",
+      "initials": "MĐ",
+      "likes": 33,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nội dung quá chất lượng mong chờ tập sau",
+      "initials": "TT",
+      "likes": 40,
+      "name": "Hoàng Thu Thảo",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Kênh này cực kỳ bổ ích 10 điểm",
+      "initials": "HH",
+      "likes": 4,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Nhạc rất bổ ích mong chờ tập sau",
+      "initials": "NS",
+      "likes": 11,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Bài hát quá chất lượng nhé",
+      "initials": "VA",
+      "likes": 18,
+      "name": "Nguyễn Văn An",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Nội dung thật sự chán cần cải thiện",
+      "initials": "TB",
+      "likes": 25,
+      "name": "Trần Thị Bình",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Bật chế độ lặp lại nghe cả ngày không chán luôn á.",
+      "initials": "HC",
+      "likes": 32,
+      "name": "Lê Hoàng Cường",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Beat nhạc rất ý nghĩa luôn",
+      "initials": "MĐ",
+      "likes": 39,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Video khá đỉnh cao luôn",
+      "initials": "TT",
+      "likes": 3,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Cách truyền đạt vô cùng cuốn mong chờ tập sau",
+      "initials": "HH",
+      "likes": 10,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Kênh này cực kỳ nhạt nhẽo 😡",
+      "initials": "NS",
+      "likes": 17,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nhạc rất hay mong chờ tập sau",
+      "initials": "VA",
+      "likes": 24,
+      "name": "Nguyễn Văn An",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nhạc nền quá to đè hết cả tiếng người nói, quá tệ.",
+      "initials": "TB",
+      "likes": 31,
+      "name": "Trần Thị Bình",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Nội dung thật sự sâu lắng 😍",
+      "initials": "HC",
+      "likes": 38,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Kênh này quá đỉnh cao nha",
+      "initials": "MĐ",
+      "likes": 2,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Quảng cáo hơi rác thua",
+      "initials": "TT",
+      "likes": 9,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Beat nhạc thật sự bổ ích ❤️",
+      "initials": "HH",
+      "likes": 16,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nhạc quá rác cần cải thiện",
+      "initials": "NS",
+      "likes": 23,
+      "name": "Đặng Ngọc Sơn",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Cách truyền đạt khá chất lượng nhé",
+      "initials": "VA",
+      "likes": 30,
+      "name": "Nguyễn Văn An",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Quảng cáo chèn vào quá nhiều, trải nghiệm cực kỳ ức chế.",
+      "initials": "TB",
+      "likes": 37,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Video quá nhiều ồn ào 😡",
+      "initials": "HC",
+      "likes": 1,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Video quá nhiều buồn ngủ !",
+      "initials": "MĐ",
+      "likes": 8,
+      "name": "Phạm Minh Đức",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Bài hát quá chất lượng 10 điểm",
+      "initials": "TT",
+      "likes": 15,
+      "name": "Hoàng Thu Thảo",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Quảng cáo chèn vào quá nhiều, trải nghiệm cực kỳ ức chế.",
+      "initials": "HH",
+      "likes": 22,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Nội dung khá chất lượng nha",
+      "initials": "NS",
+      "likes": 29,
+      "name": "Đặng Ngọc Sơn",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Dựng phim đỉnh thực sự, màu sắc nét căng, 10 điểm không có nhưng.",
+      "initials": "VA",
+      "likes": 36,
+      "name": "Nguyễn Văn An",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Nội dung cực kỳ bổ ích nhé",
+      "initials": "TB",
+      "likes": 0,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Nội dung thật sự cuốn nhé",
+      "initials": "HC",
+      "likes": 7,
+      "name": "Lê Hoàng Cường",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Kênh này rất chán 😡",
+      "initials": "MĐ",
+      "likes": 14,
+      "name": "Phạm Minh Đức",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Beat nhạc rất ý nghĩa mong chờ tập sau",
+      "initials": "TT",
+      "likes": 21,
+      "name": "Hoàng Thu Thảo",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Quảng cáo thật sự rác thua",
+      "initials": "HH",
+      "likes": 28,
+      "name": "Vũ Huy Hoàng",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "3 ngày trước"
+    },
+    {
+      "comment": "Hướng dẫn chi tiết dễ hiểu, cảm ơn kênh rất nhiều nha.",
+      "initials": "NS",
+      "likes": 35,
+      "name": "Đặng Ngọc Sơn",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "2 giờ trước"
+    },
+    {
+      "comment": "Bài hát khá hay nhé",
+      "initials": "VA",
+      "likes": 42,
+      "name": "Nguyễn Văn An",
+      "score": 7.5,
+      "sentiment": "Tích cực",
+      "time": "5 giờ trước"
+    },
+    {
+      "comment": "Bài hát khá ý nghĩa mong chờ tập sau",
+      "initials": "TB",
+      "likes": 6,
+      "name": "Trần Thị Bình",
+      "score": 5.0,
+      "sentiment": "Trung tính",
+      "time": "1 ngày trước"
+    },
+    {
+      "comment": "Nội dung hơi thiếu tôn trọng người xem chán hẳn",
+      "initials": "HC",
+      "likes": 13,
+      "name": "Lê Hoàng Cường",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "2 ngày trước"
+    },
+    {
+      "comment": "Kênh này thật sự tệ cần cải thiện",
+      "initials": "MĐ",
+      "likes": 20,
+      "name": "Phạm Minh Đức",
+      "score": 2.5,
+      "sentiment": "Tiêu cực",
+      "time": "3 ngày trước"
+    }
+  ],
+  "keywords": [
+    [
+      "quá",
+      69
+    ],
+    [
+      "nhạc",
+      36
+    ],
+    [
+      "cực",
+      32
+    ],
+    [
+      "nội",
+      29
+    ],
+    [
+      "dung",
+      29
+    ],
+    [
+      "rất",
+      29
+    ],
+    [
+      "nhiều",
+      29
+    ],
+    [
+      "thật",
+      28
+    ],
+    [
+      "chán",
+      28
+    ],
+    [
+      "cách",
+      23
+    ],
+    [
+      "dựng",
+      21
+    ],
+    [
+      "phim",
+      21
+    ],
+    [
+      "quảng",
+      21
+    ],
+    [
+      "cáo",
+      21
+    ],
+    [
+      "luôn",
+      17
+    ]
+  ],
+  "offline_mode": true,
+  "overall": {
+    "average_score": 4.8,
+    "recommendation": "Cần xem xét",
+    "star_rating": 2.4,
+    "summary": "TRUNG BÌNH (12.5% tích cực)",
+    "total_comments": 200,
+    "url": "https://youtu.be/7NFCMm4MRvI?si=7gt_0YLz3S0Z-pla"
+  },
+  "pain_points_data": [
+    {
+      "count": 28,
+      "desc": "Âm thanh cực kỳ nhảm nhí chán hẳn",
+      "title": "Chán"
+    },
+    {
+      "count": 19,
+      "desc": "Kênh này quá tệ tắt đi luôn",
+      "title": "Quá"
+    },
+    {
+      "count": 13,
+      "desc": "Âm thanh cực kỳ nhảm nhí chán hẳn",
+      "title": "Hẳn"
+    }
+  ],
+  "platform": "youtube",
+  "sentiment_distribution": {
+    "negative": 40,
+    "negative_pct": 20.0,
+    "neutral": 135,
+    "neutral_pct": 67.5,
+    "positive": 25,
+    "positive_pct": 12.5
+  },
+  "sentiment_trend": {
+    "bins": [
+      "0-5m",
+      "5-10m",
+      "10-15m",
+      "15-20m",
+      "20-25m",
+      "25-30m",
+      "30-35m",
+      "35-40m"
+    ],
+    "negative": [
+      0.0,
+      0.1,
+      0.0,
+      0.2,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "neutral": [
+      0.5,
+      0.7,
+      0.4,
+      1.0,
+      0.6,
+      0.4,
+      0.3,
+      0.5
+    ],
+    "positive": [
+      0.2,
+      0.4,
+      0.4,
+      0.3,
+      0.4,
+      0.3,
+      0.4,
+      0.4
+    ]
+  },
+  "success": true,
+  "summary_header": "Nội dung được đánh giá <strong>TRUNG BÌNH</strong> (12.5% tích cực). Phản hồi bình thường.",
+  "summary_text": "Nội dung được đánh giá trung bình. Người xem có cả phản hồi tốt lẫn góp ý xây dựng.",
+  "tags": [
+    "Trung tính",
+    "Youtube",
+    "Quá",
+    "Nhạc"
+  ]
+}

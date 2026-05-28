@@ -1,0 +1,243 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-cyan: var(--cyan);
+  --color-cyan-glow: var(--cyan-glow);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+  --color-neutral: var(--neutral);
+}
+
+:root {
+  --radius: 0.75rem;
+  /* Dark space theme */
+  --background: oklch(0.13 0.02 240);
+  --foreground: oklch(0.98 0.005 240);
+  --card: oklch(0.18 0.025 240);
+  --card-foreground: oklch(0.98 0.005 240);
+  --popover: oklch(0.18 0.025 240);
+  --popover-foreground: oklch(0.98 0.005 240);
+  --primary: oklch(0.82 0.16 200);
+  --primary-foreground: oklch(0.13 0.02 240);
+  --secondary: oklch(0.22 0.03 240);
+  --secondary-foreground: oklch(0.98 0.005 240);
+  --muted: oklch(0.22 0.03 240);
+  --muted-foreground: oklch(0.65 0.02 240);
+  --accent: oklch(0.25 0.04 240);
+  --accent-foreground: oklch(0.98 0.005 240);
+  --destructive: oklch(0.65 0.22 25);
+  --destructive-foreground: oklch(0.98 0.005 240);
+  --border: oklch(0.28 0.03 240);
+  --input: oklch(0.2 0.025 240);
+  --ring: oklch(0.82 0.16 200);
+
+  --cyan: oklch(0.82 0.16 200);
+  --cyan-glow: oklch(0.85 0.18 195);
+  --positive: oklch(0.75 0.18 155);
+  --negative: oklch(0.7 0.22 25);
+  --neutral: oklch(0.65 0.02 240);
+
+  --gradient-cta: linear-gradient(135deg, oklch(0.78 0.18 200), oklch(0.65 0.22 270));
+  --gradient-analyze: linear-gradient(135deg, oklch(0.72 0.22 15), oklch(0.7 0.22 35));
+  --gradient-title: linear-gradient(135deg, oklch(0.85 0.18 195), oklch(0.7 0.2 220));
+  --shadow-glow: 0 0 40px oklch(0.82 0.16 200 / 0.35);
+  --shadow-card: 0 8px 32px oklch(0 0 0 / 0.4);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Inter", sans-serif;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, oklch(0.82 0.16 200 / 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 100%, oklch(0.65 0.22 270 / 0.06), transparent);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .bg-grid {
+    background-image:
+      linear-gradient(oklch(0.82 0.16 200 / 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(0.82 0.16 200 / 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: center;
+  }
+  .text-gradient-title {
+    background: var(--gradient-title);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bg-gradient-cta {
+    background: var(--gradient-cta);
+  }
+  .bg-gradient-analyze {
+    background: var(--gradient-analyze);
+  }
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  .shadow-card-soft {
+    box-shadow: var(--shadow-card);
+  }
+}
+
+/* ============================================================
+   Cyberpunk HUD / Sci-Fi Grid background
+   ============================================================ */
+
+.cyber-grid-floor,
+.cyber-grid-ceiling {
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  height: 60vh;
+  background-image:
+    linear-gradient(to right, oklch(0.82 0.16 200 / 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.82 0.16 200 / 0.35) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: linear-gradient(to top, black 5%, transparent 95%);
+  -webkit-mask-image: linear-gradient(to top, black 5%, transparent 95%);
+}
+.cyber-grid-floor {
+  bottom: -10vh;
+  transform: perspective(600px) rotateX(60deg);
+  transform-origin: bottom center;
+  animation: grid-scroll 14s linear infinite;
+}
+.cyber-grid-ceiling {
+  top: -10vh;
+  transform: perspective(600px) rotateX(-60deg);
+  transform-origin: top center;
+  mask-image: linear-gradient(to bottom, black 5%, transparent 95%);
+  -webkit-mask-image: linear-gradient(to bottom, black 5%, transparent 95%);
+  animation: grid-scroll-rev 18s linear infinite;
+  opacity: 0.55;
+}
+@keyframes grid-scroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 60px; }
+}
+@keyframes grid-scroll-rev {
+  0% { background-position: 0 60px; }
+  100% { background-position: 0 0; }
+}
+
+.glow-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.5;
+  animation: orb-breath 8s ease-in-out infinite;
+}
+.glow-orb-1 {
+  top: 8%; left: 12%;
+  width: 380px; height: 380px;
+  background: oklch(0.78 0.2 200);
+}
+.glow-orb-2 {
+  top: 55%; right: 8%;
+  width: 460px; height: 460px;
+  background: oklch(0.6 0.22 290);
+  animation-delay: -3s;
+}
+.glow-orb-3 {
+  bottom: 5%; left: 35%;
+  width: 320px; height: 320px;
+  background: oklch(0.7 0.22 320);
+  animation-delay: -5s;
+}
+@keyframes orb-breath {
+  0%, 100% { transform: scale(1); opacity: 0.35; }
+  50% { transform: scale(1.15); opacity: 0.6; }
+}
+
+.light-streak {
+  position: absolute;
+  left: -20%;
+  width: 40%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    oklch(0.85 0.18 200 / 0.9) 50%,
+    transparent
+  );
+  filter: drop-shadow(0 0 6px oklch(0.85 0.18 200));
+  transform: rotate(-12deg);
+  animation: streak-sweep 10s linear infinite;
+  opacity: 0;
+}
+@keyframes streak-sweep {
+  0% { transform: translateX(0) rotate(-12deg); opacity: 0; }
+  10% { opacity: 0.9; }
+  90% { opacity: 0.9; }
+  100% { transform: translateX(350%) rotate(-12deg); opacity: 0; }
+}
+
+.neon-particle {
+  position: absolute;
+  border-radius: 9999px;
+  background: oklch(0.88 0.18 195);
+  box-shadow: 0 0 8px oklch(0.85 0.18 200), 0 0 16px oklch(0.7 0.2 220 / 0.6);
+  animation: particle-float 8s ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes particle-float {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(-60px) translateX(20px); opacity: 0; }
+}
+
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    oklch(0.82 0.16 200 / 0.035) 2px,
+    oklch(0.82 0.16 200 / 0.035) 3px
+  );
+  mix-blend-mode: overlay;
+  animation: scanline-drift 8s linear infinite;
+  pointer-events: none;
+}
+@keyframes scanline-drift {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 6px; }
+}
