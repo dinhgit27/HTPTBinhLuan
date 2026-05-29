@@ -25,7 +25,8 @@ def detect_platform(url):
 
 def load_offline_comments(platform, max_total=1000):
     """Nạp dữ liệu giả lập/dự phòng từ file CSV tương ứng"""
-    filename = f"binh_luan_{platform}.csv"
+    dir_path = os.path.dirname(os.path.abspath(__file__))
+    filename = os.path.join(dir_path, f"binh_luan_{platform}.csv")
     if os.path.exists(filename):
         try:
             df = pd.read_csv(filename)
@@ -128,13 +129,13 @@ def scrape_youtube(url, max_total, api_key):
             if not next_page_token:
                 break
                 
-        print(f"[SCRAPER] YouTube API: thu thập được {len(all_comments)} bình luận (bao gồm replies)")
+        print(f"[SCRAPER] YouTube API: collected {len(all_comments)} comments (including replies)")
         if all_comments:
             return all_comments, False
         else:
             raise Exception("No comments found via API.")
     except Exception as e:
-        print(f"[SCRAPER] YouTube API lỗi, fallback offline: {e}")
+        print(f"[SCRAPER] YouTube API error, fallback offline: {e}")
         return load_offline_comments("youtube", max_total), True
 
 
@@ -382,13 +383,13 @@ def scrape_youtube_rich(url, max_total, api_key):
             if not next_page_token:
                 break
                 
-        print(f"[SCRAPER] YouTube Rich API: thu thập được {len(all_comments)} bình luận (bao gồm replies)")
+        print(f"[SCRAPER] YouTube Rich API: collected {len(all_comments)} comments (including replies)")
         if all_comments:
             return all_comments, False
         else:
             raise Exception("No comments found via API.")
     except Exception as e:
-        print(f"[SCRAPER] YouTube Rich API lỗi, fallback offline: {e}")
+        print(f"[SCRAPER] YouTube Rich API error, fallback offline: {e}")
         return load_offline_comments_rich("youtube", max_total), True
 
 
