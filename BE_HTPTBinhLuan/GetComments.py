@@ -2,7 +2,7 @@ from googleapiclient.discovery import build
 import pandas as pd
 
 # 1. Điền API Key của bạn vào đây (nhớ giữ lại cặp dấu ngoặc kép "")
-API_KEY = "AIzaSyDSS2KKpjlQWC6e1RT45nqwfZuJm3MMo5s"
+API_KEY = "AIzaSyDo1_HgQDTSqw1BIezKMu45Y3BYKk091Tw"
 
 def lay_binh_luan_youtube(video_id, max_total=1000):
     # Khởi tạo kết nối với YouTube

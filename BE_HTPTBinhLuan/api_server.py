@@ -28,6 +28,7 @@ CORS(app)  # Cho phép gọi API từ client web không bị lỗi CORS
 
 # Cấu hình API Key
 API_KEY = os.getenv("API_KEY", "AIzaSyDSS2KKpjlQWC6e1RT45nqwfZuJm3MMo5s")
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "AIzaSyDo1_HgQDTSqw1BIezKMu45Y3BYKk091Tw")
 
 # ============================================
 # CẤU HÌNH MODEL AI (PhoBERT - Chính xác cao)
@@ -790,7 +791,7 @@ def analyze():
     
     try:
         # 1. Thu thập dữ liệu qua platform_scrapers (Dùng get_comments_rich)
-        all_comments_rich, detected_platform, using_offline = get_comments_rich(url, max_comments, API_KEY)
+        all_comments_rich, detected_platform, using_offline = get_comments_rich(url, max_comments, YOUTUBE_API_KEY)
         
         if not all_comments_rich:
             return jsonify({"success": False, "error": "Không tìm thấy bình luận nào cho liên kết này!"}), 404

@@ -10,7 +10,7 @@ from platform_scrapers import get_comments, detect_platform
 # ============================================
 # CONFIG
 # ============================================
-API_KEY = "AIzaSyDSS2KKpjlQWC6e1RT45nqwfZuJm3MMo5s"
+API_KEY = "AIzaSyDo1_HgQDTSqw1BIezKMu45Y3BYKk091Tw"
 TELEGRAM_BOT_TOKEN = "8606918938:AAFlcQ33rMCw8z-uB6wYm96M8NG3SUfqkvE"
 TELEGRAM_API = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
 

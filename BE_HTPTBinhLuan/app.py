@@ -765,6 +765,7 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8606918938:AAFlcQ33rMCw8z-
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "8585436965")
 TELEGRAM_API = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
 API_KEY = os.getenv("API_KEY", "AIzaSyDSS2KKpjlQWC6e1RT45nqwfZuJm3MMo5s")
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "AIzaSyDo1_HgQDTSqw1BIezKMu45Y3BYKk091Tw")
 
 
 # ============================================
@@ -1394,7 +1395,7 @@ else:
                 st.markdown('</div>', unsafe_allow_html=True)
                 
                 # Fetch comments
-                all_comments, actual_platform, is_offline = get_comments(st.session_state['current_url'], max_total=1000, youtube_api_key=API_KEY)
+                all_comments, actual_platform, is_offline = get_comments(st.session_state['current_url'], max_total=1000, youtube_api_key=YOUTUBE_API_KEY)
                 
                 if is_offline:
                     st.warning(f"⚠️ **Offline Mode:** Hệ thống không thể thu thập dữ liệu trực tiếp. Chuyển sang sử dụng tập dữ liệu dự phòng.")
