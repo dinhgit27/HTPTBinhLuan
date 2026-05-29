@@ -52,7 +52,7 @@ export function AnalyzerHero({
           disabled={isLoading}
           className="flex items-center justify-center gap-2 rounded-xl border border-border bg-input px-4 py-3 text-sm transition hover:border-cyan/50 cursor-pointer"
         >
-          <Globe className="h-4 w-4 text-cyan" /> {lang === "vi" ? "Tiếng Việt" : "Tiếng Anh/Khác"}
+          <Globe className="h-4 w-4 text-cyan" /> <span>{lang === "vi" ? "Tiếng Việt" : "Tiếng Anh/Khác"}</span>
         </button>
         <button
           onClick={onAnalyze}
@@ -64,7 +64,7 @@ export function AnalyzerHero({
           ) : (
             <Play className="h-4 w-4 fill-white" />
           )}
-          Phân tích
+          <span>Phân tích</span>
         </button>
       </div>
     </section>
