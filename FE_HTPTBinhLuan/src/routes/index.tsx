@@ -231,10 +231,12 @@ function Index() {
           
           {/* Thanh tiến trình phân tích */}
           <div className="mt-6 w-full max-w-md px-6 flex flex-col items-center">
-            <Progress value={progress} className="h-2 w-full bg-cyan/10 [&>div]:bg-cyan transition-all duration-300" />
+            <div translate="no" className="notranslate w-full">
+              <Progress value={progress} className="h-2 w-full bg-cyan/10 [&>div]:bg-cyan transition-all duration-300" />
+            </div>
             <div className="mt-2 flex w-full justify-between text-xs text-muted-foreground">
               <span>Đang xử lý dữ liệu...</span>
-              <span className="font-semibold text-cyan">{Math.round(progress)}%</span>
+              <span translate="no" className="notranslate font-semibold text-cyan">{Math.round(progress)}%</span>
             </div>
           </div>
 
